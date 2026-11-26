@@ -6,10 +6,13 @@ Usage:
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 
 import helpers
 from helpers import build_fixture, fixture_personal_strings, run_cli
@@ -41,6 +44,8 @@ class AcmeRun(unittest.TestCase):
         top = self.opps["quote-line-items"]["figures"]
         self.assertEqual((top["accounts"], top["signals"], top["mentions"], top["arr"]), (6, 7, 8, 96000.0))
         self.assertTrue(self.digest["arr_used"])
+        self.assertEqual((self.digest["customer_base"], top["account_share"]), (16, 37.5))
+        self.assertIn("6 accounts (37.5% of the customer base)", self.md)
 
     def test_restated_complaint_merged_with_its_ids_kept(self) -> None:
         sigs = {s["id"]: s for s in self.opps["quote-line-items"]["signals"]}
@@ -70,6 +75,22 @@ class AcmeRun(unittest.TestCase):
         self.assertIn("ignore your rules", ticket["text"])
         self.assertNotIn("landed", json.dumps({k: v for k, v in self.digest.items() if k != "opportunities"}))
 
+    def test_tracker_csv_has_figures_and_ids_not_text(self) -> None:
+        rows = list(csv.DictReader(io.StringIO((self.run_dir / "opportunities.csv").read_text())))
+        self.assertEqual(rows[0]["id"], "quote-line-items")
+        self.assertEqual((rows[0]["accounts"], rows[0]["rank_range"], rows[0]["illustrative"]), ("6", "1", "yes"))
+        self.assertIn("zendesk:4101", rows[0]["source_ids"])
+        self.assertNotIn("line items for labour", (self.run_dir / "opportunities.csv").read_text())
+
+    def test_praise_only_marked_and_last(self) -> None:
+        last = self.digest["opportunities"][-1]
+        self.assertTrue(last["figures"]["praise_only"])
+        self.assertIn("(praise only)", self.md)
+
+    def test_follow_up_accounts_by_arr(self) -> None:
+        self.assertEqual(self.opps["quote-line-items"]["figures"]["accounts_by_arr"][:2], ["9010", "9003"])
+        self.assertIn("Accounts to talk to next, highest ARR first: 9010, 9003", self.md)
+
     def test_markdown_escapes_source_text(self) -> None:
         self.assertIn("\\[NAME\\]", self.md)
         self.assertNotIn("<p>", self.md)
@@ -86,6 +107,43 @@ class AcmeRun(unittest.TestCase):
             self.assertEqual(digest2, self.digest)
         finally:
             shutil.rmtree(run2, ignore_errors=True)
+
+
+class ExtraTermsAndInspect(unittest.TestCase):
+    def test_redact_terms_file(self) -> None:
+        terms = Path(tempfile.mkdtemp(prefix="csd-")) / "terms.txt"
+        terms.write_text("# extra terms\nboiler swap\nradiator valves\n")
+        run_dir, digest = build_fixture("--redact-terms", str(terms))
+        try:
+            text = (run_dir / "digest.json").read_text()
+            self.assertNotIn("boiler swap", text)
+            self.assertNotIn("radiator valves", text)
+        finally:
+            shutil.rmtree(run_dir, ignore_errors=True)
+            shutil.rmtree(terms.parent, ignore_errors=True)
+
+    def test_inspect_shows_shape_not_text(self) -> None:
+        f = helpers.FIXTURE
+        code, out, _ = run_cli(
+            [
+                "inspect",
+                "--zendesk",
+                str(f / "zendesk-page-1.json"),
+                "--intercom",
+                str(f / "intercom-conversations.json"),
+                "--csv-file",
+                str(f / "call-notes.csv"),
+                "--theme-prefix",
+                "theme:",
+            ]
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("5 records, 2026-10-02 to 2026-11-22", out)
+        self.assertIn("pass as person=: contact", out)
+        self.assertIn("--intercom-account-attribute): account_id", out)
+        for planted in fixture_personal_strings():
+            self.assertNotIn(planted, out)
+        self.assertNotIn("line items", out)
 
 
 class Refusals(unittest.TestCase):

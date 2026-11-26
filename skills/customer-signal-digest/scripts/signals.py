@@ -198,3 +198,8 @@ def read_accounts(path: str, account_col: str = "account", arr_col: str = "arr")
         except ValueError:
             raise Refused(f"{path}: {arr_col} for {acct!r} is {raw!r}, not a number.") from None
     return out
+
+
+def count_accounts(path: str, account_col: str = "account") -> int:
+    """Distinct named accounts in an accounts file: the customer base for a share of accounts."""
+    return len({str(r.get(account_col) or "").strip() for r in read_csv(Path(path))} - {""})

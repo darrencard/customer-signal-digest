@@ -16,7 +16,17 @@ Score = w_reach * reach + w_frequency * frequency + w_recency * recency, where
 ARR is used only when every account named in the run has an ARR. Otherwise it is shown with its coverage and
 left out of the score, so a partial ARR file cannot reorder the list.
 
-Ties break on accounts, then signals, then id. Default weights: reach 0.5, frequency 0.3, recency 0.2.
+Praise-only opportunities rank after every problem, whatever their score. Ties break on accounts, then signals,
+then id. Default weights: reach 0.5, frequency 0.3, recency 0.2.
+Each opportunity also gets `rank_range`: its best and worst rank under the chosen weights and three alternatives
+(reach-heavy, frequency-heavy, recency-heavy). A wide range says the order depends on the weights, not the data.
+
+Also per opportunity: signals in the last 30 days and the 30 before (a trend from counts, not a forecast), NPS
+detractors, passives and promoters, `praise_only` when every signal is a promoter (praise, not a problem), and
+its accounts by ARR, highest first, as the people to talk to next. With a customer base (the rows of the accounts
+file), `account_share` is accounts as a percentage of it, to one decimal place.
+
+Scores are relative to the most-raised opportunity in this run, so compare ranks across digests, not scores.
 
 Standard library only. Runs on Python 3.9 or later.
 """
@@ -29,6 +39,12 @@ from collections import Counter
 from signals import Refused
 
 WEIGHTS = {"reach": 0.5, "frequency": 0.3, "recency": 0.2}
+# The sensitivity check: each opportunity's rank under these alternatives, so a reader sees whether the order is fragile.
+ALTERNATIVES = {
+    "reach-heavy": {"reach": 0.7, "frequency": 0.2, "recency": 0.1},
+    "frequency-heavy": {"reach": 0.2, "frequency": 0.7, "recency": 0.1},
+    "recency-heavy": {"reach": 0.2, "frequency": 0.2, "recency": 0.6},
+}
 HALF_LIFE_DAYS = 30
 
 
@@ -70,16 +86,31 @@ def figures(opp: dict, as_of: datetime.date, arr: dict[str, float], half_life: i
         "days_since_last": (as_of - last).days if last else None,
         "undated_signals": len(sigs) - len(dated),
         "recency": round(sum(0.5 ** (a / half_life) for a in ages) / len(ages), 4) if ages else 0.0,
+        "last_30_days": sum(1 for a in ages if a < 30),
+        "prior_30_days": sum(1 for a in ages if 30 <= a < 60),
         "detractors": sum(1 for s in sigs if s["kind"] == "nps" and s["score"] is not None and s["score"] <= 6),
+        "passives": sum(1 for s in sigs if s["kind"] == "nps" and s["score"] is not None and 7 <= s["score"] <= 8),
+        "promoters": sum(1 for s in sigs if s["kind"] == "nps" and s["score"] is not None and s["score"] >= 9),
+        "praise_only": bool(sigs) and all(s["kind"] == "nps" and s["score"] is not None and s["score"] >= 9 for s in sigs),
+        "accounts_by_arr": sorted(accounts, key=lambda a: (-arr.get(a, 0.0), a)),
         "by_source": dict(sorted(Counter(s["source"] for s in sigs).items())),
     }
 
 
-def rank(opps: list[dict], as_of: datetime.date, arr: dict[str, float], weights: dict[str, float] | None = None, half_life: int = HALF_LIFE_DAYS) -> dict:
+def rank(
+    opps: list[dict],
+    as_of: datetime.date,
+    arr: dict[str, float],
+    weights: dict[str, float] | None = None,
+    half_life: int = HALF_LIFE_DAYS,
+    customer_base: int | None = None,
+) -> dict:
     """Opportunities with `figures`, `score`, `components` and `rank`, best first, and the basis used."""
     w = weights or dict(WEIGHTS)
     for o in opps:
         o["figures"] = figures(o, as_of, arr, half_life)
+        n = o["figures"]["accounts"]
+        o["figures"]["account_share"] = round(100 * n / customer_base, 1) if customer_base else None
     named = sorted({a for o in opps for a in o["figures"]["account_ids"]})
     with_arr = [a for a in named if a in arr]
     use_arr = bool(named) and len(with_arr) == len(named)
@@ -94,13 +125,23 @@ def rank(opps: list[dict], as_of: datetime.date, arr: dict[str, float], weights:
         comp = {"reach": round(reach, 4), "frequency": round(f["signals"] / top_signals if top_signals else 0.0, 4), "recency": f["recency"]}
         o["components"] = comp
         o["score"] = round(sum(w[k] * comp[k] for k in w), 4)
-    opps.sort(key=lambda o: (-o["score"], -o["figures"]["accounts"], -o["figures"]["signals"], o["id"]))
+
+    def order(score_of) -> list[dict]:
+        return sorted(opps, key=lambda o: (o["figures"]["praise_only"], -score_of(o), -o["figures"]["accounts"], -o["figures"]["signals"], o["id"]))
+
+    opps[:] = order(lambda o: o["score"])
     for i, o in enumerate(opps, 1):
         o["rank"] = i
+        o["rank_range"] = [i, i]
+    for alt in ALTERNATIVES.values():
+        for i, o in enumerate(order(lambda o, alt=alt: round(sum(alt[k] * o["components"][k] for k in alt), 4)), 1):
+            o["rank_range"] = [min(o["rank_range"][0], i), max(o["rank_range"][1], i)]
     return {
         "weights": w,
+        "alternatives": ALTERNATIVES,
         "half_life_days": half_life,
         "arr_used": use_arr,
+        "customer_base": customer_base,
         "arr_coverage": {"accounts_named": len(named), "accounts_with_arr": len(with_arr)},
         "opportunities": opps,
     }

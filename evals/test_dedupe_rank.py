@@ -115,6 +115,33 @@ class Rank(unittest.TestCase):
         self.assertEqual((f["signals"], f["mentions"], f["accounts"], f["no_account_signals"], f["detractors"]), (2, 3, 1, 1, 1))
         self.assertEqual(f["days_since_last"], 0)
 
+    def test_rank_range_shows_weight_sensitivity(self) -> None:
+        out = rank.rank(self.opps(), AS_OF, {})
+        ranges = {o["id"]: o["rank_range"] for o in out["opportunities"]}
+        self.assertEqual(ranges, {"wide": [1, 2], "loud": [1, 2]})
+        solid = [
+            {"id": "big", "name": "b", "signals": [sig(f"z:{i}", "x", f"a{i}", "2026-11-25") for i in range(5)]},
+            {"id": "small", "name": "s", "signals": [sig("y:1", "x", "a9", "2026-10-01")]},
+        ]
+        self.assertEqual([o["rank_range"] for o in rank.rank(solid, AS_OF, {})["opportunities"]], [[1, 1], [2, 2]])
+
+    def test_trend_counts(self) -> None:
+        o = {
+            "id": "o",
+            "name": "o",
+            "signals": [sig("z:1", "x", created="2026-11-20"), sig("z:2", "x", created="2026-10-20"), sig("z:3", "x", created="2026-09-01")],
+        }
+        f = rank.figures(o, AS_OF, {})
+        self.assertEqual((f["last_30_days"], f["prior_30_days"]), (1, 1))
+
+    def test_praise_only_ranks_after_problems(self) -> None:
+        praise = {"id": "praise", "name": "p", "signals": [sig(f"n:{i}", "love it", f"a{i}", "2026-11-25", kind="nps", score=10) for i in range(9)]}
+        problem = {"id": "problem", "name": "q", "signals": [sig("z:1", "broken", "a1", "2026-09-01")]}
+        out = rank.rank([praise, problem], AS_OF, {})
+        self.assertEqual([o["id"] for o in out["opportunities"]], ["problem", "praise"])
+        self.assertTrue(out["opportunities"][1]["figures"]["praise_only"])
+        self.assertEqual(out["opportunities"][1]["figures"]["promoters"], 9)
+
     def test_bad_weights_refused(self) -> None:
         for bad in ("reach=1", "reach=0.5,frequency=0.5,recency=0.5", "reach=0.5,frequency=0.6,recency=-0.1", "speed=1"):
             with self.subTest(bad=bad), self.assertRaises(Refused):

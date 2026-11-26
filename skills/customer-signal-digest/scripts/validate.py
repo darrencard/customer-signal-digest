@@ -11,6 +11,7 @@ Errors (any one blocks the render):
   quote-not-in-evidence text in quotation marks is not word for word in that opportunity's redacted evidence
   personal-data         the note holds an email, phone, card number, known name or another pattern redaction removes
   too-long              a title over 80 characters or a summary over 400
+  title-is-a-solution   a title that starts with a build verb (Add, Build, Integrate ...): name the customer's problem
 
 Standard library only. Runs on Python 3.9 or later.
 """
@@ -45,6 +46,7 @@ OVERCLAIM = (
     "causes churn",
     "statistically significant",
 )
+SOLUTION_VERBS = ("add", "build", "create", "implement", "integrate", "launch", "ship", "make", "enable", "support", "introduce", "develop", "offer")
 _NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?%?")
 _QUOTED = re.compile(r"[\"“]([^\"”]{4,})[\"”]")
 
@@ -52,11 +54,19 @@ _QUOTED = re.compile(r"[\"“]([^\"”]{4,})[\"”]")
 def _allowed_numbers(opp: dict) -> set[float]:
     f = opp["figures"]
     vals = [f["signals"], f["mentions"], f["accounts"], f["detractors"], f["days_since_last"], f["arr"], opp["rank"], f["no_account_signals"]]
+    vals += [f["last_30_days"], f["prior_30_days"], f["passives"], f["promoters"], 30, *opp["rank_range"]]
     vals += list(f["by_source"].values())
     out = {float(v) for v in vals if v is not None}
+    if f.get("account_share") is not None:
+        out.add(float(f["account_share"]))
+        out.add(float(round(f["account_share"])))
     if f["arr"] is not None:
         out |= {round(f["arr"] / 1000), round(f["arr"] / 1000, 1), round(f["arr"] / 1_000_000, 1), round(f["arr"] / 1_000_000, 2)}
     return out
+
+
+def f_share(opp: dict) -> float | None:
+    return opp["figures"].get("account_share")
 
 
 def _numbers(text: str) -> list[tuple[str, float]]:
@@ -88,12 +98,16 @@ def check(notes: dict, digest: dict, salt: str, fingerprints: list[str]) -> list
         opp = opps[oid]
         allowed = _allowed_numbers(opp)
         evidence = [s["text"] for s in opp["signals"]]
+        first = (str(note.get("title") or "").split() or [""])[0].lower().strip(",.:")
+        if first in SOLUTION_VERBS:
+            err("title-is-a-solution", oid, "title", f'starts with "{first}"; name the customer\'s problem, not a fix')
         for field, limit in (("title", 80), ("summary", 400)):
             text = str(note.get(field) or "")
             if len(text) > limit:
                 err("too-long", oid, field, f"{len(text)} characters; the limit is {limit}")
             for raw, value in _numbers(text):
-                if raw.endswith("%") or value not in allowed:
+                pct_ok = raw.endswith("%") and f_share(opp) is not None and value in (f_share(opp), round(f_share(opp)))
+                if (raw.endswith("%") and not pct_ok) or (not raw.endswith("%") and value not in allowed):
                     err("figure-not-computed", oid, field, f"{raw} is not a figure computed for this opportunity")
             low = text.lower()
             for phrase in OVERCLAIM:

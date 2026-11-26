@@ -46,6 +46,7 @@ class Notes(unittest.TestCase):
             "overclaim": {"summary": "Every customer hits this and fixing it will reduce churn."},
             "quote-not-in-evidence": {"summary": 'A customer said "the AI is useless".'},
             "personal-data": {"summary": "Priya Raman raised it first; reach her at priya@example.com."},
+            "title-is-a-solution": {"title": "Add a line item checker to quote drafts"},
             "unknown-opportunity": None,
         }
         for rule, note in cases.items():
@@ -55,10 +56,12 @@ class Notes(unittest.TestCase):
                 self.assertEqual(code, 1)
                 self.assertIn(f"error {rule}", err)
 
-    def test_percentages_are_not_computed(self) -> None:
+    def test_only_the_computed_share_may_be_a_percentage(self) -> None:
         code, err = self.render({"quote-line-items": {"summary": "Up 50% this month."}})
         self.assertEqual(code, 1)
         self.assertIn("figure-not-computed", err)
+        code, err = self.render({"quote-line-items": {"summary": "Raised by 6 accounts, 37.5% of the customer base."}})
+        self.assertEqual(code, 0, err)
 
     def test_leak_report_does_not_repeat_the_name(self) -> None:
         _, err = self.render({"quote-line-items": {"summary": "Ask Grace about it."}})

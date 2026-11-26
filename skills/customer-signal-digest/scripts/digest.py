@@ -8,10 +8,15 @@ Usage:
       --csv "source=nps,kind=nps,file=nps.csv,text=comment,score=score" \\
       --accounts accounts.csv --themes themes.json
   python3 scripts/digest.py render --run run [--notes run/notes.json]
+  python3 scripts/digest.py inspect --zendesk tickets-*.json --csv-file call-notes.csv nps.csv
 
 build writes run/digest.json. Only redacted text is written: raw text and known names stay in memory, and
 names are kept only as salted hashes (run/fingerprints.json) so later notes can be checked against them.
+build also writes run/opportunities.csv, one row per opportunity, for a tracker import.
 render checks notes.json with validate.py and writes run/digest.md. Any error stops the render.
+inspect describes each input (counts, dates, accounts, CSV columns, and which columns look personal) without showing text.
+
+--redact-terms names a text file of extra terms to redact, one per line: staff names, customer company names, codes.
 
 --csv takes comma-separated key=value pairs: source, kind (call, nps, survey, ticket, conversation) and file
 are required; id, text, date, account, theme, score and person (repeatable with +, for example
@@ -25,7 +30,9 @@ Standard library only. Runs on Python 3.9 or later.
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime
+import io
 import json
 import re
 import secrets
@@ -138,13 +145,20 @@ def build(args: argparse.Namespace) -> int:
         allsig = [s for s in allsig if s["created"] and s["created"] >= args.since]
         left_out[f"signals before {args.since} or undated"] = before - len(allsig)
     allsig = [s for s in allsig if s["created"] <= as_of.isoformat() or not s["created"]]
+    if args.redact_terms:
+        try:
+            extra = [line.strip() for line in Path(args.redact_terms).read_text(encoding="utf-8").splitlines()]
+        except (OSError, UnicodeDecodeError) as e:
+            raise signals.Refused(f"cannot read {args.redact_terms} ({e}).") from None
+        known |= {t for t in extra if t and not t.startswith("#")}
     known_list = sorted(known)
     redacted = redact.redact_signals(allsig, known_list)
     kept, merged = dedupe.dedupe(allsig)
     themes = cluster.load_themes(args.themes)
     opps = cluster.cluster(kept, themes)
     arr = signals.read_accounts(args.accounts) if args.accounts else {}
-    result = rank.rank(opps, as_of, arr, rank.parse_weights(args.weights))
+    base = args.customer_base or (signals.count_accounts(args.accounts) if args.accounts else None)
+    result = rank.rank(opps, as_of, arr, rank.parse_weights(args.weights), customer_base=base)
     withheld = 0
     for o in result["opportunities"]:
         o["quotes"], w = pick_quotes(o, known_list, args.max_quotes)
@@ -172,6 +186,7 @@ def build(args: argparse.Namespace) -> int:
         **result,
     }
     (run / "digest.json").write_text(json.dumps(digest, indent=2) + "\n")
+    write_csv(run / "opportunities.csv", digest)
     print(f"digest: {digest['counts']['kept']} signals ({merged} duplicates merged) in {len(result['opportunities'])} opportunities.")
     print(f"digest: {sum(redacted.values())} personal-data spans redacted; {withheld} quotes withheld. Written to {run / 'digest.json'}.")
     if not result["arr_used"] and arr:
@@ -180,9 +195,104 @@ def build(args: argparse.Namespace) -> int:
     return 0
 
 
+CSV_COLUMNS = (
+    "rank",
+    "rank_range",
+    "id",
+    "name",
+    "score",
+    "accounts",
+    "arr",
+    "signals",
+    "mentions",
+    "last_30_days",
+    "prior_30_days",
+    "account_share",
+    "last_seen",
+    "detractors",
+    "promoters",
+    "accounts_by_arr",
+    "source_ids",
+    "illustrative",
+)
+
+
+def write_csv(path: Path, digest: dict) -> None:
+    """One row per opportunity, for a tracker import. Redacted names only; no quotes."""
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(CSV_COLUMNS)
+    for o in digest["opportunities"]:
+        f = o["figures"]
+        ids = " ".join(sorted(i for s in o["signals"] for i in [s["id"], *s["duplicates"]]))
+        w.writerow(
+            [
+                o["rank"],
+                _range(o["rank_range"]),
+                o["id"],
+                o["name"],
+                f"{o['score']:.4f}",
+                f["accounts"],
+                "" if f["arr"] is None else f["arr"],
+                f["signals"],
+                f["mentions"],
+                f["last_30_days"],
+                f["prior_30_days"],
+                "" if f["account_share"] is None else f["account_share"],
+                f["last_seen"] or "",
+                f["detractors"],
+                f["promoters"],
+                " ".join(f["accounts_by_arr"]),
+                ids,
+                "yes" if digest["illustrative"] else "no",
+            ]
+        )
+    path.write_text(buf.getvalue())
+
+
+PERSONAL_HEADER = re.compile(r"name|email|e-mail|contact|phone|mobile|person|requester|author|customer_?name|address", re.I)
+
+
+def inspect(args: argparse.Namespace) -> int:
+    """What each input holds, without showing any text: counts, date range, and for a CSV its columns and which look personal."""
+    for p in args.zendesk:
+        got, known = signals.from_zendesk([p], args.theme_prefix)
+        _describe(f"Zendesk {Path(p).name}", got, f"{len(known)} requester names and emails will be redacted")
+    for p in args.intercom:
+        got, known = signals.from_intercom([p], args.theme_prefix, args.intercom_account_attribute)
+        _describe(f"Intercom {Path(p).name}", got, f"{len(known)} author names and emails will be redacted")
+        attrs = sorted({k for c in signals.load_json(Path(p)).get("conversations", []) for k in (c.get("custom_attributes") or {})})
+        if attrs and not args.intercom_account_attribute:
+            print(f"  Custom attributes, one may name the account (--intercom-account-attribute): {', '.join(attrs)}.")
+    for p in args.csv_file:
+        rows = signals.read_csv(Path(p))
+        cols = list(rows[0]) if rows else []
+        personal = [c for c in cols if PERSONAL_HEADER.search(c)]
+        print(f"CSV {Path(p).name}: {len(rows)} rows. Columns: {', '.join(cols) or 'none'}.")
+        if personal:
+            print(f"  May hold personal data, pass as person=: {'+'.join(personal)}.")
+    return 0
+
+
+def _describe(label: str, got: list[dict], note: str) -> None:
+    dates = sorted(s["created"] for s in got if s["created"])
+    span = f"{dates[0]} to {dates[-1]}" if dates else "no dates"
+    accounts = len({s["account"] for s in got if s["account"]})
+    tagged = sum(1 for s in got if s["theme"])
+    print(f"{label}: {len(got)} records, {span}, {accounts} accounts, {tagged} with a theme tag; {note}.")
+
+
 def _md(text: str) -> str:
     """Source text shown as data: no markup, links, HTML or headings from a ticket survive."""
     return re.sub(r"([\\`*_\[\]<>#|])", r"\\\1", text)
+
+
+def _share(f: dict) -> str:
+    return "" if f["account_share"] is None else f" ({f['account_share']}% of the customer base)"
+
+
+def _range(r: list[int]) -> str:
+    return str(r[0]) if r[0] == r[1] else f"{r[0]} to {r[1]}"
 
 
 def plural(n: int, noun: str) -> str:
@@ -211,17 +321,21 @@ def render_md(digest: dict, notes: dict) -> str:
     cov = digest["arr_coverage"]
     lines += [
         f"Ranked in code: score = {w['reach']} reach + {w['frequency']} frequency + {w['recency']} recency "
-        f"(half-life {digest['half_life_days']} days; {arr_note}, known for {cov['accounts_with_arr']} of {cov['accounts_named']} accounts).",
+        f"(half-life {digest['half_life_days']} days; {arr_note}, known for {cov['accounts_with_arr']} of {cov['accounts_named']} accounts). "
+        "Scores are relative to this run: compare ranks across digests, not scores.",
+        "Rank range is the best and worst rank under the chosen weights and three alternatives (reach-, frequency- and "
+        "recency-heavy). A wide range means the order rests on the weights. Last 30 days and prior 30 days are signal counts, not a forecast.",
         "",
-        f"| Rank | Opportunity | Score | Accounts | ARR | Signals | Mentions | Last seen | Detractors |{' Data |' if tag else ''}",
-        f"|---|---|---|---|---|---|---|---|---|{'---|' if tag else ''}",
+        f"| Rank | Rank range | Opportunity | Score | Accounts | ARR | Signals | Last 30 days | Prior 30 days | Last seen |{' Data |' if tag else ''}",
+        f"|---|---|---|---|---|---|---|---|---|---|{'---|' if tag else ''}",
     ]
     for o in digest["opportunities"]:
         f = o["figures"]
         title = (notes.get(o["id"]) or {}).get("title") or o["name"]
         lines.append(
-            f"| {o['rank']} | {_md(title)} | {o['score']:.2f} | {f['accounts']} | {_money(f['arr'])} | {f['signals']} | {f['mentions']} | "
-            f"{f['last_seen'] or 'n/a'} | {f['detractors']} |{' Illustrative |' if tag else ''}"
+            f"| {o['rank']} | {_range(o['rank_range'])} | {_md(title)}{' (praise only)' if f['praise_only'] else ''} | {o['score']:.2f} | "
+            f"{f['accounts']} | {_money(f['arr'])} | {f['signals']} | {f['last_30_days']} | {f['prior_30_days']} | "
+            f"{f['last_seen'] or 'n/a'} |{' Illustrative |' if tag else ''}"
         )
     for o in digest["opportunities"]:
         f, note = o["figures"], notes.get(o["id"]) or {}
@@ -229,12 +343,18 @@ def render_md(digest: dict, notes: dict) -> str:
         if note.get("summary"):
             lines += [_md(note["summary"]), ""]
         lines += [
-            f"{plural(f['accounts'], 'account')}, {plural(f['signals'], 'signal')} ({plural(f['mentions'], 'mention')}), last seen {f['last_seen'] or 'n/a'} "
+            f"{plural(f['accounts'], 'account')}{_share(f)}, {plural(f['signals'], 'signal')} ({plural(f['mentions'], 'mention')}), "
+            f"last seen {f['last_seen'] or 'n/a'} "
             f"({plural(f['days_since_last'], 'day') if f['days_since_last'] is not None else 'n/a'} before {digest['as_of']}). "
             f"Grouped by {o['how']}. Components: reach {o['components']['reach']:.2f}, frequency {o['components']['frequency']:.2f}, "
-            f"recency {o['components']['recency']:.2f}.",
+            f"recency {o['components']['recency']:.2f}. "
+            f"NPS: {plural(f['detractors'], 'detractor')}, {plural(f['passives'], 'passive')}, {plural(f['promoters'], 'promoter')}.",
             "",
         ]
+        if f["praise_only"]:
+            lines += ["Every signal here is an NPS promoter: this is praise, not a problem to solve.", ""]
+        if f["accounts_by_arr"]:
+            lines += [f"Accounts to talk to next, highest ARR first: {', '.join(f['accounts_by_arr'][:5])}.", ""]
         for q in o["quotes"]:
             lines += [f"> {_md(q['text'])}", f"> ({', '.join(q['ids'])}; {q['kind']}, {q['created'] or 'undated'})", ""]
         if not o["quotes"]:
@@ -246,9 +366,16 @@ def render_md(digest: dict, notes: dict) -> str:
         rows = [
             ("Accounts", f["accounts"], "distinct accounts on its deduplicated signals"),
             ("ARR", _money(f["arr"]), f"summed ARR of the {plural(f['arr_accounts'], 'account')} with a known ARR"),
+            (
+                "Share of accounts",
+                "n/a" if f["account_share"] is None else f"{f['account_share']}%",
+                f"accounts / a customer base of {digest['customer_base']}" if digest["customer_base"] else "no customer base given",
+            ),
             ("Signals", f["signals"], "signals after duplicates were merged"),
             ("Mentions", f["mentions"], "signals plus the duplicates merged into them"),
             ("Recency", f"{f['recency']:.2f}", f"mean of 0.5 ^ (age / {digest['half_life_days']} days) over dated signals"),
+            ("Last 30 / prior 30 days", f"{f['last_30_days']} / {f['prior_30_days']}", f"signals 0 to 29 and 30 to 59 days before {digest['as_of']}"),
+            ("Rank range", _range(o["rank_range"]), "best and worst rank under the chosen weights and the three alternatives"),
             ("Source IDs", ids, "every signal and duplicate behind the figures above"),
         ]
         for name, value, how in rows:
@@ -297,12 +424,20 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--weights", help="reach=0.5,frequency=0.3,recency=0.2")
     b.add_argument("--max-quotes", type=int, default=3)
     b.add_argument("--illustrative", action="store_true", help="mark every figure as illustrative (sample data)")
+    b.add_argument("--customer-base", type=int, help="the number of customer accounts; defaults to the rows in --accounts")
+    b.add_argument("--redact-terms", help="a text file, one term per line: extra names, company names or codes to redact")
+    i = sub.add_parser("inspect", help="describe each input without showing its text, before a build")
+    i.add_argument("--zendesk", nargs="+", default=[])
+    i.add_argument("--intercom", nargs="+", default=[])
+    i.add_argument("--csv-file", nargs="+", default=[], help="CSV files to list columns for")
+    i.add_argument("--theme-prefix")
+    i.add_argument("--intercom-account-attribute")
     r = sub.add_parser("render", help="validate notes and write digest.md")
     r.add_argument("--run", default="run")
     r.add_argument("--notes", help='notes.json: {"notes": {"<id>": {"title", "summary"}}}')
     args = ap.parse_args(argv)
     try:
-        return build(args) if args.cmd == "build" else render(args)
+        return {"build": build, "render": render, "inspect": inspect}[args.cmd](args)
     except signals.Refused as e:
         print(f"digest: {e}", file=sys.stderr)
         return 2
