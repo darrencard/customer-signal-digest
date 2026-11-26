@@ -1,0 +1,5 @@
+call_id,date,account,contact,notes
+C-301,2026-11-19,9010,Nadia Brennan,Spoke with Nadia Brennan. Their estimators stopped using AI quote drafts because line items for materials go missing. They re-key every quote.
+C-302,2026-11-10,9004,Ahmed Siddiqui,Ahmed walked through the accounting export. Tax code on labour lines is wrong every month and the bookkeeper fixes the ledger by hand.
+C-303,2026-10-28,9011,Ivan Petrov,Call with Ivan Petrov. Invoice chaser sent reminders after the customer had already paid. Wants chasing to stop when payment is matched.
+C-304,2026-11-25,9003,Grace Lindqvist,Grace says quote drafts are still missing line items for labour. Considering going back to the old template.

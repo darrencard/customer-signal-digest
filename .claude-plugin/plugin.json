@@ -1,0 +1,6 @@
+{
+  "name": "customer-signal-digest",
+  "version": "0.1.0",
+  "description": "Customer Signal Digest. Turn support tickets, call notes and NPS answers into ranked product opportunities. Personal data is redacted first, duplicates are merged, every figure is computed in code and every quote carries its source IDs.",
+  "author": { "name": "Dacard" }
+}

@@ -1,0 +1,12 @@
+{
+  "opportunities": [
+    {"id": "quote-line-items", "name": "AI quote drafts miss line items",
+     "keywords": ["line items", "line item", "left off", "materials", "quote draft", "quote drafts", "drafted quote"]},
+    {"id": "chaser-paid-invoices", "name": "Invoice chasers go to customers who already paid",
+     "keywords": ["already paid", "chaser", "reminder", "reminders", "chase", "chasing"]},
+    {"id": "offline-sync", "name": "Mobile app loses job notes offline",
+     "keywords": ["offline", "signal", "synced", "syncs", "sync"]},
+    {"id": "accounting-export", "name": "Accounting export puts the wrong tax code on labour",
+     "keywords": ["accounting export", "tax code", "tax codes", "ledger", "bookkeeper"]}
+  ]
+}

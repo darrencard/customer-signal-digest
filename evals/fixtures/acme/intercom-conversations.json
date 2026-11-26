@@ -1,0 +1,89 @@
+{
+  "conversations": [
+    {
+      "id": "215001",
+      "created_at": 1795510800,
+      "source": {
+        "subject": "",
+        "body": "<p>The quote draft left off the materials for the boiler swap.</p><p>Copper pipe and fittings were missing.</p>",
+        "author": {
+          "name": "Priya Raman",
+          "email": "priya.raman@harbourplumbing.example"
+        }
+      },
+      "tags": {
+        "tags": [
+          {
+            "name": "theme:quote-line-items"
+          }
+        ]
+      },
+      "custom_attributes": {
+        "account_id": "9001"
+      }
+    },
+    {
+      "id": "215002",
+      "created_at": 1795078800,
+      "source": {
+        "subject": "",
+        "body": "<p>Hi, this is Sam Whitfield from Whitfield Joinery. The drafted quote skipped the line items for hinges and handles. Ring me on +44 20 7946 0958.</p>",
+        "author": {
+          "name": "Sam Whitfield",
+          "email": "sam@whitfieldjoinery.example"
+        }
+      },
+      "tags": {
+        "tags": []
+      },
+      "custom_attributes": {
+        "account_id": "9007"
+      }
+    },
+    {
+      "id": "215003",
+      "created_at": 1793869200,
+      "source": {
+        "subject": "",
+        "body": "<p>App went offline on site and the job sheet never synced. Lost an hour of notes.</p>",
+        "author": {
+          "name": "Leah Morgan",
+          "email": "leah@morganelectric.example"
+        }
+      },
+      "tags": {
+        "tags": [
+          {
+            "name": "theme:offline-sync"
+          }
+        ]
+      },
+      "custom_attributes": {
+        "account_id": "9008"
+      }
+    },
+    {
+      "id": "215004",
+      "created_at": 1795251600,
+      "source": {
+        "subject": "",
+        "body": "<p>Can you add a dark mode to the dashboard? Our office staff work late. See https://portal.example/ticket?id=88&amp;token=abc123</p>",
+        "author": {
+          "name": "Owen Hughes",
+          "email": "owen@hughesgas.example"
+        }
+      },
+      "tags": {
+        "tags": []
+      },
+      "custom_attributes": {
+        "account_id": "9009"
+      }
+    }
+  ],
+  "pages": {
+    "type": "pages",
+    "page": 1,
+    "total_pages": 1
+  }
+}

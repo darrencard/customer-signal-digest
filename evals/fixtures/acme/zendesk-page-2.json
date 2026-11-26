@@ -1,0 +1,21 @@
+{
+  "tickets": [
+    {"id": 4103, "created_at": "2026-11-12T11:30:00Z", "organization_id": 9003, "requester_id": 503,
+     "subject": "Missing line items again",
+     "description": "Third quote this month where the draft is missing line items for labour. Card on file is 4111 1111 1111 1111 if you need to refund the month.",
+     "tags": []},
+    {"id": 4106, "created_at": "2026-11-05T10:10:00Z", "organization_id": 9006, "requester_id": 506,
+     "subject": "Jobs lost when the van has no signal",
+     "description": "Our engineers lose the job notes when the mobile app goes offline in basements. Nothing syncs when signal comes back. I live at 14 Elm Street, V5K 0A1 if you want to send someone.",
+     "tags": ["theme:offline-sync"]},
+    {"id": 4107, "created_at": "2026-11-24T13:00:00Z", "organization_id": 9002, "requester_id": 502,
+     "subject": "Chaser again",
+     "description": "Another automatic reminder to a client who paid on Friday. Please stop the chase once the payment lands.",
+     "tags": []}
+  ],
+  "users": [
+    {"id": 503, "name": "Grace Lindqvist", "email": "grace@lindqvistroofing.example"},
+    {"id": 506, "name": "Dev Patel", "email": "dev.patel@pateldrainage.example"},
+    {"id": 502, "name": "Tom Okafor", "email": "tom@okaforelectrical.example"}
+  ]
+}
