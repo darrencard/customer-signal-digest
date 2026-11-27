@@ -7,6 +7,8 @@
 - Public copy in plain words, on the page and in the Markdown twin: project, target, landing brief (defined at first use), the project file. The record's words are unchanged.
 - The Illustrative tag is the family's blue, not the template's grey.
 - Tests: the picture draws only printed figures, green appears only beside the word landed, the aria-label states the answer, public copy uses the plain words, and the vendored svgkit matches its pin.
+- Fix round 2: no text under 11px at any width. The vendored template and svgkit stay byte-identical; `floor_fonts` raises their smaller sizes to 11px as the page is built, and on phones the picture's panel gives the 340 wide variant its full width so its labels never shrink. The header and the Markdown twin print the plain name, "Customer signals"; the code name prints only for engineers. The other skill is named "Did it land?" in public copy.
+- Fix round 2: accounts to talk to are ordered "highest revenue first" and print as "account 9010", on the page and in the twin; the project file keeps its own words. Tests: no font size under 11px, the header's name, the account wording, and no "record", "bet", "the bar", "PRD", "ARR" or "tokens" in public copy.
 
 ## 0.3.0, 2026-11-26
 

@@ -367,6 +367,35 @@ class Visual(unittest.TestCase):
                 self.assertNotIn(word, text)
         self.assertIn("<b>landing brief</b>, a one-page plan (what good looks like, by when, at what cost)", self.page)
         self.assertIn("is a project you expect to move a number", self.page)
+        for text in (public, md):
+            for word in (r"\brecords?\b", r"\bbets?\b", r"\bthe bar\b", r"\bprds?\b", r"\barr\b", r"\btokens?\b", r"customer-signal-digest", r"did-it-land"):
+                self.assertIsNone(re.search(word, text), word)
+
+    def test_accounts_print_by_revenue_as_account_ids(self) -> None:
+        talk = ", ".join(f"account {a}" for a in self.key["themes"][0]["talk_to"])
+        self.assertIn("account 9010, account 9003", talk)
+        for text in (self.page, self.md):
+            self.assertIn(f"highest revenue first ({talk})", text)
+            self.assertIn(f"Accounts to talk to, highest revenue first: {talk}", text)
+        self.assertIn("highest ARR first (9010,", self.key["next_step"], "the project file keeps its own words")
+
+    def test_no_text_is_smaller_than_11px(self) -> None:
+        css = " ".join(re.findall(r"<style>(.*?)</style>", self.page, re.DOTALL)) + " " + " ".join(re.findall(r'style="([^"]*)"', self.page))
+        sizes = re.findall(r"font-size\s*:\s*([\d.]+)px", css) + re.findall(r"font\s*:[^;{}]*?(?<![\w.-])([\d.]+)px", css)
+        sizes += re.findall(r'font-size="([\d.]+)"', self.page)
+        self.assertTrue(sizes)
+        self.assertEqual([s for s in sizes if float(s) < 11], [])
+        self.assertNotRegex(css, r"font-size\s*:\s*[\d.]+r?em")
+        before, after = ".a{font:400 10px/16px var(--mono)}.b{font-size:10.5px}.c{font-size:13px}", ".a{font:400 11px/16px var(--mono)}.b{font-size:11px}.c{font-size:13px}"
+        self.assertEqual(render_html.floor_fonts(before), after)
+        # The phone picture is 340 wide; on a 390px screen the panel gives it 356px, so its 11px labels never shrink.
+        self.assertIn("@media (max-width:440px){.panel{margin:0 -8px;padding:16px 8px 14px}}", self.page)
+
+    def test_the_header_prints_the_plain_name_and_the_code_name_is_for_engineers(self) -> None:
+        self.assertEqual(re.search(r'<span class="sk-meta"><span>(.*?)</span>', self.page).group(1), "Customer signals")
+        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.1."))
+        self.assertIn("Built by customer-signal-digest 0.3.1.", self.page.split("For your engineers", 1)[1])
+        self.assertIn("Built by customer-signal-digest 0.3.1.", self.md.split("## For your engineers", 1)[1])
 
     def test_the_page_follows_the_sample_anatomy(self) -> None:
         body = self.page.split('<main class="solo">', 1)[1]
@@ -375,7 +404,7 @@ class Visual(unittest.TestCase):
         self.assertEqual(at, sorted(at))
         self.assertEqual(body.count("<h1>"), 1)
         self.assertIn("<details><summary>For your engineers</summary>", body)
-        self.assertIn("<span>customer-signal-digest</span><span>As of 2026-11-26</span><span>v0.3.1</span>", body)
+        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.1</span>", body)
         self.assertNotIn("Book a call", body, "a sample is the skill's own output: no call to action")
 
 

@@ -47,31 +47,31 @@ main.solo{margin-left:0}
 .solo .lede{margin-bottom:24px}
 .solo .lede b{color:var(--t1);font-weight:500}
 .solo h2{margin-bottom:16px}
-.marks{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;margin:0 0 20px;font:400 10px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.marks{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;margin:0 0 20px;font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
 .marks>span{display:inline-flex;align-items:center;gap:10px}
-.chk{font:400 10px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t1);border:1px solid var(--line3);border-radius:3px;padding:1px 6px;white-space:nowrap}
+.chk{font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t1);border:1px solid var(--line3);border-radius:3px;padding:1px 6px;white-space:nowrap}
 .panel{border:1px solid var(--line);border-radius:12px;background:var(--s1);padding:24px 28px 20px}
 @media (min-width:1100px){.panel .sk{display:grid;grid-template-columns:640px minmax(0,1fr);gap:16px 40px;align-items:center}.panel .sk figcaption{margin-top:0;flex-direction:column;align-items:flex-start}}
 .next{margin-top:28px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 32px;align-items:baseline;border:1px solid var(--brass);border-radius:12px;padding:20px 24px;background:var(--brass-bg)}
-.next>b{font:400 10px/22px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--brass)}
+.next>b{font:400 11px/22px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--brass)}
 .next p{margin:0;font-size:16px;line-height:1.5;color:var(--t1)}
 .next .who{display:flex;flex-wrap:wrap;gap:4px 24px;margin-top:10px;font:400 11.5px/16px var(--mono);color:var(--brass)}
-.next .who span::before{font-size:10px;letter-spacing:.1em;color:var(--t3);margin-right:8px}
+.next .who span::before{font-size:11px;letter-spacing:.1em;color:var(--t3);margin-right:8px}
 .next .who .o::before{content:"DECIDES"}.next .who .d::before{content:"DUE"}
 .cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px 56px;align-items:start}
 .cols h3{margin-bottom:8px}
 .figs{margin:0;display:grid}
 .figs>div{display:grid;grid-template-columns:132px minmax(0,1fr);gap:4px 16px;border-top:1px solid var(--line);padding:11px 0}
-.figs dt{font:400 10px/22px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.figs dt{font:400 11px/22px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
 .figs dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--t2)}
 .figs dd b{color:var(--t1);font-weight:500}
 .theme{margin:0 0 28px}
-.theme .side{font:400 10px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.theme .side{font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
 .theme h4{margin:4px 0;font-size:16px;font-weight:500;color:var(--t1)}
 .theme .sum{margin:0 0 6px;font-size:13px;color:var(--t2)}
 .q{margin:0;padding:12px 0;border-top:1px solid var(--line)}
 .q p{margin:0 0 6px;font-size:14px;line-height:1.55;color:var(--t1)}
-.q footer{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font:400 10px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.q footer{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
 .talk{margin:8px 0 0;font:400 11px/18px var(--mono);color:var(--t3)}
 .solo details{margin-top:4px}
 .solo details>*:not(summary){margin-top:12px}
@@ -85,8 +85,9 @@ main.solo{margin-left:0}
 @media (max-width:980px){.foot{padding:24px 16px 48px}.solo .slide.cover{padding-top:24px}.cols,.next{grid-template-columns:1fr}.panel{padding:18px 16px 16px}
 .stack table,.stack tbody,.stack tr,.stack td{display:block}.stack tr:first-child{display:none}.stack tr{padding:10px 16px;border-bottom:1px solid var(--line)}
 .stack td{border:0;padding:3px 0;display:grid;grid-template-columns:118px 1fr;gap:12px}.stack td.num{text-align:left;white-space:normal}
-.stack td::before{content:attr(data-l);font:400 10px/20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}}
+.stack td::before{content:attr(data-l);font:400 11px/20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}}
 @media (max-width:560px){.figs>div{grid-template-columns:1fr;gap:0}}
+@media (max-width:440px){.panel{margin:0 -8px;padding:16px 8px 14px}}
 """
 
 SIDE_LABEL = {"problem": "Still feel the problem", "praise": "Problem gone"}
@@ -106,10 +107,31 @@ def e(text: Any) -> str:
     return html.escape(str(text), quote=True)
 
 
+def accounts_text(ids: list[str]) -> str:
+    """Account ids as the page prints them: "account 9010, account 9003"."""
+    return ", ".join(f"account {a}" for a in ids)
+
+
 def plain(text: str) -> str:
+    text = re.sub(r"highest ARR first \(([^)]*)\)", lambda m: f"highest revenue first ({accounts_text(m.group(1).split(', '))})", text)
     for pattern, to in WORDS:
         text = re.sub(pattern, to, text)
     return text
+
+
+FONT_FLOOR = 11  # px: no text on the page renders smaller, at any width
+FONT_SIZE = re.compile(r"(font-size\s*:\s*)(\d+(?:\.\d+)?)px")
+FONT_SHORTHAND = re.compile(r"(font\s*:[^;{}]*?)(?<![\w.-])(\d+(?:\.\d+)?)px")
+
+
+def floor_fonts(css: str) -> str:
+    """Raise every font size under 11px to 11px. The vendored template and svgkit stay byte-identical on disk;
+    the floor applies to their text as the page is built, so this page's CSS has no smaller size anywhere."""
+
+    def up(m: re.Match[str]) -> str:
+        return f"{m.group(1)}{FONT_FLOOR if float(m.group(2)) < FONT_FLOOR else m.group(2)}px"
+
+    return FONT_SHORTHAND.sub(up, FONT_SIZE.sub(up, css))
 
 
 def stylesheet() -> str:
@@ -261,11 +283,11 @@ def figures(key: dict[str, Any]) -> list[tuple[str, str]]:
     better = "or higher" if b["better"] == "higher" else "or lower"
     cur = bs.get("current")
     if bs["status"] is None:
-        now = "Not read yet: run did-it-land."
+        now = "Not read yet: run Did it land?"
     elif cur:
-        now = f"<b>{e(n(cur))}</b> on {e(cur['window']['to'])}, as did-it-land read it."
+        now = f"<b>{e(n(cur))}</b> on {e(cur['window']['to'])}, in the Did it land? read."
     else:
-        now = "As did-it-land read it."
+        now = "From the Did it land? read."
     return [
         ("The target", f"{e(b['metric'])}: <b>{e(b['bar'])}</b> {better} by {e(b['by'])}."),
         ("The number now", now),
@@ -290,7 +312,7 @@ def theme_block(t: dict[str, Any], ill: bool) -> str:
     f = t["figures"]
     tag = '<span class="sk-ill">Illustrative</span>' if ill else ""
     quotes = "".join(f'<blockquote class="q"><p>&ldquo;{e(q["text"])}&rdquo;</p><footer><span>{e(q["created"])}</span>{tag}</footer></blockquote>' for q in t["quotes"])
-    talk = f'<p class="talk">Accounts to talk to, highest ARR first: {e(", ".join(t["talk_to"]))}</p>' if t["talk_to"] and t["side"] == "problem" else ""
+    talk = f'<p class="talk">Accounts to talk to, highest revenue first: {e(accounts_text(t["talk_to"]))}</p>' if t["talk_to"] and t["side"] == "problem" else ""
     summary = (
         f"{plural(f['signals']['value'], 'signal')} from {plural(f['accounts']['value'], 'account')}; {n(f['last_30_days'])} in the last 30 days, "
         f"{n(f['prior_30_days'])} in the 30 days before."
@@ -370,8 +392,8 @@ def page(key: dict[str, Any], bet: str) -> str:
     bs, ill = key["bet_status"], key["illustrative"]
     title = f"What customers said: {project_name(bet)}"
     version = "v" + key["tool"].rsplit(" ", 1)[-1]
-    header = sk.page_header("customer-signal-digest", date=f"As of {key['as_of']}", version=version, illustrative=ill)
-    marks = f'<p class="marks"><span>Project status, from did-it-land {status_mark(bs)}</span><span>Customer check {check_mark(key)}</span></p>'
+    header = sk.page_header("Customer signals", date=f"As of {key['as_of']}", version=version, illustrative=ill)
+    marks = f'<p class="marks"><span>Project status, from Did it land? {status_mark(bs)}</span><span>Customer check {check_mark(key)}</span></p>'
     pic = sk.figure(stacks(key, "wide"), stacks(key, "tall"), caption=caption(key), illustrative=ill)
     step = (
         f'<div class="next"><b>What to do next</b><div><p>{e(plain(key["next_step"]))}</p>'
@@ -394,7 +416,7 @@ def page(key: dict[str, Any], bet: str) -> str:
     )
     return (
         '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        f'<title>{e(title)}</title><style>{stylesheet()}{sk.CSS}{PAGE_CSS}</style></head><body><main class="solo">'
+        f'<title>{e(title)}</title><style>{floor_fonts(stylesheet() + sk.CSS + PAGE_CSS)}</style></head><body><main class="solo">'
         f"{cover}{detail}{more}{foot}</main></body></html>\n"
     )
 
@@ -413,9 +435,9 @@ def markdown(key: dict[str, Any], bet: str) -> str:
     bs = key["bet_status"]
     p, g = side(key, "problem"), side(key, "praise")
     version = key["tool"].rsplit(" ", 1)[-1]
-    out = [f"# {_md(heading(key, bet))}", "", f"customer-signal-digest v{version}. As of {key['as_of']}." + (" Illustrative." if key["illustrative"] else ""), ""]
+    out = [f"# {_md(heading(key, bet))}", "", f"Customer signals v{version}. As of {key['as_of']}." + (" Illustrative." if key["illustrative"] else ""), ""]
     out += [_md(_text(lede(key, bet))), ""]
-    out += [f"**Project status, from did-it-land:** {bs['status'] or 'not read'}. **Customer check:** {CHECK_PLAIN.get(key['check'], key['check'])}.", ""]
+    out += [f"**Project status (Did it land?):** {bs['status'] or 'not read'}. **Customer check:** {CHECK_PLAIN.get(key['check'], key['check'])}.", ""]
     out += [
         f"Still feel the problem: {plural(p['signals'], 'signal')} from {plural(p['accounts'], 'account')}, {p['recent']} in the last 30 days. "
         f"Problem gone: {plural(g['signals'], 'signal')} from {plural(g['accounts'], 'account')}, {g['recent']} in the last 30 days.",
@@ -437,7 +459,7 @@ def markdown(key: dict[str, Any], bet: str) -> str:
         for q in t["quotes"]:
             out += [f"> {_md(q['text'])}", f"> ({q['created']}{'; illustrative' if q['illustrative'] else ''})", ""]
         if t["talk_to"] and t["side"] == "problem":
-            out += [f"Accounts to talk to, highest ARR first: {', '.join(t['talk_to'])}", ""]
+            out += [f"Accounts to talk to, highest revenue first: {accounts_text(t['talk_to'])}", ""]
     out += ["## The figures", ""]
     out += [f"- **{k}:** {_md(_text(v))}" for k, v in figures(key)]
     out += [""]

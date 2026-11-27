@@ -1,16 +1,16 @@
 # Quote drafting landed, but 7 customer accounts still raise the problem.
 
-customer-signal-digest v0.3.1. As of 2026-11-26. Illustrative.
+Customer signals v0.3.1. As of 2026-11-26. Illustrative.
 
 Quote drafting is a project you expect to move a number. Its landing brief, a one-page plan (what good looks like, by when, at what cost), names the problem: Tradespeople spend evenings writing quotes by hand, so quotes go out late and lose the job. This page reads 21 signals (tickets, chats, call notes and survey comments) from 16 customer accounts, 2026-09-07 to 2026-11-24.
 
-**Project status, from did-it-land:** landed. **Customer check:** problem still raised.
+**Project status (Did it land?):** landed. **Customer check:** problem still raised.
 
 Still feel the problem: 7 signals from 7 accounts, 5 in the last 30 days. Problem gone: 5 signals from 5 accounts, 2 in the last 30 days.
 
 ## What to do next
 
-Talk to the 7 accounts on the problem side, highest ARR first (9010, 9003, 9001, 9007, 9012, 9005, 9008), before deciding whether to scale the project.
+Talk to the 7 accounts on the problem side, highest revenue first (account 9010, account 9003, account 9001, account 9007, account 9012, account 9005, account 9008), before deciding whether to scale the project.
 
 Decides: Head of Product, Quoting squad. Due: 2026-12-10.
 
@@ -29,7 +29,7 @@ Still feel the problem. 7 signals from 7 accounts; 5 in the last 30 days, 2 in t
 > Spoke with \[NAME\]. Their estimators stopped using AI quote drafts because line items for materials go missing. They re-key every quote.
 > (2026-11-19; illustrative)
 
-Accounts to talk to, highest ARR first: 9010, 9003, 9001, 9007, 9012, 9005, 9008
+Accounts to talk to, highest revenue first: account 9010, account 9003, account 9001, account 9007, account 9012, account 9005, account 9008
 
 ### Quotes go out the same day
 
@@ -47,7 +47,7 @@ Problem gone. 5 signals from 5 accounts; 2 in the last 30 days, 2 in the 30 days
 ## The figures
 
 - **The target:** Quote draft acceptance rate: 40% or higher by 2026-11-15.
-- **The number now:** 43% on 2026-11-23, as did-it-land read it.
+- **The number now:** 43% on 2026-11-23, in the Did it land? read.
 - **Still feel it:** 7 signals from 7 accounts: 5 in the last 30 days, 2 in the 30 days before.
 - **Problem gone:** 5 signals from 5 accounts: 2 in the last 30 days.
 - **All feedback:** 21 signals from 16 accounts, 2026-09-07 to 2026-11-24. 57.1% are about this project.
