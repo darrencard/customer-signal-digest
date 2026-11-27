@@ -20,7 +20,11 @@ from __future__ import annotations
 import csv
 import datetime
 import json
+import sys
 from pathlib import Path
+
+if sys.version_info < (3, 11):  # noqa: UP036  (the floor, checked before anything is read or written)
+    sys.exit("customer-signal-digest needs Python 3.11 or later; try python3.12")
 
 OUT = Path(__file__).resolve().parent.parent / "examples" / "acme" / "feedback"
 

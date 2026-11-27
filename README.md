@@ -55,7 +55,7 @@ Every figure carries value, unit, source, window and as_of. Shortened:
   "as_of": "2026-11-26",
   "window": {"from": "2026-09-07", "to": "2026-11-24"},
   "check": "problem still raised",
-  "bet_status": {"status": "landed", "printed_from": "landed.status", "computed_by": "did-it-land 0.3.0"},
+  "bet_status": {"status": "landed", "printed_from": "landed.status", "computed_by": "did-it-land 0.3.1"},
   "figures": {
     "problem_last_30_days": {"value": 5, "unit": "signals", "source": "customer-signal-digest 0.3.0: problem-side signals in the last 30 days; Zendesk: ...", "window": {"from": "2026-10-28", "to": "2026-11-24"}, "as_of": "2026-11-26"}
   },

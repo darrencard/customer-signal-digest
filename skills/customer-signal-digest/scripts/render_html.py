@@ -23,6 +23,9 @@ TEMPLATE = Path(__file__).resolve().parent.parent / "assets" / "vendor" / "templ
 STYLE = re.compile(r"<style>(.*?)</style>", re.S)
 
 PAGE_CSS = """
+/* The vendored template paints selection and focus green; green is kept for landed, so both print in ink here. */
+::selection{background:var(--t1);color:var(--bg)}
+:focus-visible{outline-color:var(--t1)}
 main.solo{margin-left:0}
 .solo .slide{min-height:0}
 .solo .slide.cover{padding-top:72px;padding-bottom:40px}

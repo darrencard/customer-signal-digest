@@ -28,6 +28,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "customer-signal-digest"
@@ -38,6 +39,7 @@ sys.path.insert(0, str(SCRIPTS / "vendor"))
 
 import digest  # noqa: E402
 import loop  # noqa: E402
+import render_html  # noqa: E402
 import signals  # noqa: E402
 
 STATUS = re.compile(r"\b(landed|watch|stalled)\b", re.I)
@@ -265,6 +267,54 @@ class StatusWords(unittest.TestCase):
             bs = json.loads((into / "landing" / "quote-drafting.json").read_text())["signals"]["bet_status"]
             self.assertIsNone(bs["status"])
             self.assertIn("run did-it-land", bs["note"])
+
+
+class Floor(unittest.TestCase):
+    """Python 3.11 is the floor; a failed run never strips the record."""
+
+    def test_every_entry_script_stops_on_an_old_python_with_a_plain_message(self) -> None:
+        for path in (SCRIPTS / "digest.py", ACME / "sample.py", ROOT / "evals" / "make_sample.py"):
+            code = f"import runpy, sys; sys.version_info = (3, 9, 6); runpy.run_path({str(path)!r}, run_name='__main__')"
+            done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=30, check=False)  # noqa: S603
+            self.assertEqual(done.returncode, 1, path.name)
+            self.assertIn("needs Python 3.11 or later", done.stderr, path.name)
+            self.assertIn("try python3.12", done.stderr, path.name)
+
+    def test_a_render_failure_leaves_the_record_as_it_was(self) -> None:
+        with tempfile.TemporaryDirectory() as t:
+            into = Path(t)
+            run_sample(into)
+            p = into / "landing" / "quote-drafting.json"
+            before = p.read_bytes()
+            argv = [*build_argv(into), "--html", str(into / "page.html")]
+            with mock.patch.object(render_html, "page", side_effect=TypeError("boom")), self.assertRaises(TypeError), redirect_stdout(io.StringIO()):
+                digest.main(argv)
+            self.assertEqual(p.read_bytes(), before)
+            self.assertIn(b'"signals"', before)
+            self.assertFalse((into / "page.html").exists())
+
+    def test_a_failed_sample_run_leaves_the_committed_record_as_it_was(self) -> None:
+        sys.path.insert(0, str(ACME))
+        import sample  # noqa: PLC0415
+
+        with tempfile.TemporaryDirectory() as t:
+            into = Path(t)
+            run_sample(into)
+            before = (into / "landing" / "quote-drafting.json").read_bytes()
+            with mock.patch.object(render_html, "page", side_effect=TypeError("boom")), self.assertRaises(TypeError), redirect_stdout(io.StringIO()):
+                sample.main(["--into", str(into)])
+            self.assertEqual((into / "landing" / "quote-drafting.json").read_bytes(), before)
+
+
+class Colour(unittest.TestCase):
+    def test_selection_and_focus_print_in_ink_not_green(self) -> None:
+        css = re.search(r"<style>(.*?)</style>", (ACME / "customer-signal-digest.html").read_text(), re.S).group(1)
+        self.assertLess(css.index("::selection{background:var(--landed)"), css.index("::selection{background:var(--t1)"))
+        self.assertLess(css.index("outline:2px solid var(--landed)"), css.index(":focus-visible{outline-color:var(--t1)}"))
+
+    def test_decider_is_an_org_chart_role(self) -> None:
+        roles = {"Head of Product, Quoting squad", "Lead, Quoting squad", "Tech lead, Quoting squad", "Product manager, Quoting squad"}
+        self.assertIn(json.loads((ACME / "landing" / "quote-drafting.json").read_text())["signals"]["decides"], roles)
 
 
 class Sample(unittest.TestCase):

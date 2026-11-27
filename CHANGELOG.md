@@ -10,6 +10,8 @@
 - `--until` closes the feedback window; signals outside it are counted as left out.
 - Sample: `python3 examples/acme/sample.py` regenerates `examples/acme/customer-signal-digest.html`, its Markdown twin and the record from the canonical Acme brief, byte for byte.
 - Needs Python 3.11 or later, like the other loop skills.
+- Every entry script, the sample's included, stops on Python older than 3.11 before it reads or writes anything. The page is rendered before the record is written, and the sample builds in a scratch folder and moves its outputs into place only on success, so a failed run never strips the `signals` key.
+- Text selection and keyboard focus print in ink, not the template's green, which is kept for landed.
 
 ## 0.1.0, 2026-11-26
 

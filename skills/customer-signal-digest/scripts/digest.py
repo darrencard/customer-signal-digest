@@ -40,7 +40,7 @@ import sys
 from pathlib import Path
 
 if sys.version_info < (3, 11):  # noqa: UP036  (the guard exists for older interpreters)
-    raise SystemExit(f"customer-signal-digest: needs Python 3.11 or later; this is {sys.version.split()[0]}.")
+    sys.exit(f"customer-signal-digest needs Python 3.11 or later (this is {sys.version.split()[0]}); try python3.12")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
@@ -235,15 +235,18 @@ def learn(args: argparse.Namespace, digest: dict) -> None:
     except OSError as e:
         raise signals.Refused(f"cannot read the brief {brief_file} ({e}).") from None
     key = loop.signals_key(digest, record, brief, brief_file, args.bet)
-    out = loop.write(folder, args.bet, brief_file, record, key)
-    print(f"digest: wrote the signals key of {out} ({key['check'] or 'not checked'}).")
+    # The page and its twin are rendered before the record is written, so a render failure leaves the record as it was.
+    pages = []
     if args.html:
         html_path = Path(args.html)
-        html_path.parent.mkdir(parents=True, exist_ok=True)
-        html_path.write_text(render_html.page(key, args.bet), encoding="utf-8")
-        md_path = html_path.with_suffix(".md")
-        md_path.write_text(render_html.markdown(key, args.bet), encoding="utf-8")
-        print(f"digest: wrote {html_path} and {md_path}.")
+        pages = [(html_path, render_html.page(key, args.bet)), (html_path.with_suffix(".md"), render_html.markdown(key, args.bet))]
+    out = loop.write(folder, args.bet, brief_file, record, key)
+    print(f"digest: wrote the signals key of {out} ({key['check'] or 'not checked'}).")
+    for path, text in pages:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    if pages:
+        print(f"digest: wrote {pages[0][0]} and {pages[1][0]}.")
 
 
 CSV_COLUMNS = (
