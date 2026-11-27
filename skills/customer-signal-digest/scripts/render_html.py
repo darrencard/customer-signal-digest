@@ -42,6 +42,7 @@ STYLE = re.compile(r"<style>(.*?)</style>", re.S)
 NEXT_STEP_DAYS = 14
 
 # Layout for this page only. Everything else comes from the template's stylesheet and svgkit.CSS.
+# In the scorecard the figure column prints in one case, numerals and capitals ("7 ACCOUNTS"), as /update does.
 PAGE_CSS = """
 main.solo{margin-left:0}
 .solo .slide{min-height:0}
@@ -88,6 +89,7 @@ main.solo{margin-left:0}
 .stack td{border:0;padding:3px 0;display:grid;grid-template-columns:118px 1fr;gap:12px}.stack td.num{text-align:left;white-space:normal}
 .stack td::before{content:attr(data-l);font:400 11px/20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}}
 @media (max-width:560px){.figs>div{grid-template-columns:1fr;gap:0}}
+.scg .sc-l{text-transform:uppercase;letter-spacing:.06em}
 """
 
 SIDE_LABEL = {"problem": "Still feel the problem", "praise": "Problem gone"}

@@ -358,6 +358,9 @@ class Visual(unittest.TestCase):
         self.assertEqual(svgkit.svgs_with_text(self.page), [])
         self.assertEqual(svgkit.scaled_svgs_in(self.page), [])
 
+    def test_the_figure_column_prints_in_one_case(self) -> None:
+        self.assertIn(".scg .sc-l{text-transform:uppercase;letter-spacing:.06em}", self.css())
+
     def test_labels_render_12px_and_names_14px(self) -> None:
         css = self.css()
         self.assertEqual(set(svgkit.font_sizes(css)), {"var(--sc-m)", "var(--sc-n)"})
