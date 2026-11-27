@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3, 2026-11-27
+
+- Full column: the heading, the intro, the next step, section text and captions run the full width of the content column, the same width as the scorecard frame (the site's rule since 2026-11-25). The page's own CSS drops its caps on text (the heading's 22ch and the folds' 80ch) and overrides the vendored template's 62ch intro and svgkit's 76ch caption after their rules, so neither hash-pinned file changes. The heading balances its lines; text breaks with `text-wrap: pretty`. A test checks the page CSS caps no text and the sample carries the override.
+
 ## 0.3.2, 2026-11-27
 
 - Scorecard fix round: the figure column prints in one case, numerals and capitals ("7 ACCOUNTS · 5 OF 7 SIGNALS IN 30 DAYS"), as /update. A test for it.

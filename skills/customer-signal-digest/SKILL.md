@@ -4,7 +4,7 @@ description: Reads what customers said about a shipped project (a bet) against i
 license: MIT. See LICENSE in the repository root.
 metadata:
   author: Dacard
-  version: "0.3.2"
+  version: "0.3.3"
 ---
 
 # Customer Signal Digest

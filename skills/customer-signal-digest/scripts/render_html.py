@@ -47,7 +47,7 @@ PAGE_CSS = """
 main.solo{margin-left:0}
 .solo .slide{min-height:0}
 .solo .slide.cover{min-height:0;padding-top:40px;padding-bottom:48px;justify-content:flex-start}
-.solo h1{font-size:clamp(34px,4.6vw,60px);line-height:1;letter-spacing:-.04em;max-width:22ch;margin-bottom:20px}
+.solo h1{font-size:clamp(34px,4.6vw,60px);line-height:1;letter-spacing:-.04em;text-wrap:balance;margin-bottom:20px}
 .solo .lede{margin-bottom:24px}
 .solo .lede b{color:var(--t1);font-weight:500}
 .solo h2{margin-bottom:16px}
@@ -77,7 +77,7 @@ main.solo{margin-left:0}
 .talk{margin:8px 0 0;font:400 11px/18px var(--mono);color:var(--t3)}
 .solo details{margin-top:4px}
 .solo details>*:not(summary){margin-top:12px}
-.solo details p,.solo details li{margin:0 0 10px;font-size:13px;color:var(--t2);max-width:80ch}
+.solo details p,.solo details li{margin:0 0 10px;font-size:13px;color:var(--t2)}
 .solo details ul{padding-left:18px}
 .tablewrap td,.tablewrap th{overflow-wrap:anywhere}
 .nw{white-space:nowrap}
@@ -90,6 +90,9 @@ main.solo{margin-left:0}
 .stack td::before{content:attr(data-l);font:400 11px/20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}}
 @media (max-width:560px){.figs>div{grid-template-columns:1fr;gap:0}}
 .scg .sc-l{text-transform:uppercase;letter-spacing:.06em}
+/* Full column (site rule since 2026-11-25): every title and text block runs the content column, the scorecard frame's width. */
+.solo h1,.solo h2,.solo h3,.solo .lede,.solo .next,.solo p,.solo li,.solo .sk figcaption{max-width:none}
+.solo h1{text-wrap:balance}.solo .lede,.solo p,.solo li,.solo .sk figcaption{text-wrap:pretty}
 """
 
 SIDE_LABEL = {"problem": "Still feel the problem", "praise": "Problem gone"}

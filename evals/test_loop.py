@@ -437,9 +437,9 @@ class Visual(unittest.TestCase):
 
     def test_the_header_prints_the_plain_name_and_the_code_name_is_for_engineers(self) -> None:
         self.assertEqual(re.search(r'<span class="sk-meta"><span>(.*?)</span>', self.page).group(1), "Customer signals")
-        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.2."))
-        self.assertIn("Built by customer-signal-digest 0.3.2.", self.page.split("For your engineers", 1)[1])
-        self.assertIn("Built by customer-signal-digest 0.3.2.", self.md.split("## For your engineers", 1)[1])
+        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.3."))
+        self.assertIn("Built by customer-signal-digest 0.3.3.", self.page.split("For your engineers", 1)[1])
+        self.assertIn("Built by customer-signal-digest 0.3.3.", self.md.split("## For your engineers", 1)[1])
 
     def test_the_page_follows_the_sample_anatomy(self) -> None:
         body = self.page.split('<main class="solo">', 1)[1]
@@ -448,7 +448,7 @@ class Visual(unittest.TestCase):
         self.assertEqual(at, sorted(at))
         self.assertEqual(body.count("<h1>"), 1)
         self.assertIn("<details><summary>For your engineers</summary>", body)
-        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.2</span>", body)
+        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.3</span>", body)
         self.assertNotIn("Book a call", body, "a sample is the skill's own output: no call to action")
 
 
