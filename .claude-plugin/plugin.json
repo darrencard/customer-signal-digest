@@ -1,6 +1,6 @@
 {
   "name": "customer-signal-digest",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Customer Signal Digest. Reads what customers said about a shipped bet against its landing brief, from Zendesk, Intercom, call notes and NPS. Personal data is redacted first, duplicates are merged, and every figure is computed in code with its source. Step 4 of the Landing Loop: reads the brief and did-it-land's landed key, prints the bet's status as written, writes only the signals key of landing/<bet>.json, and renders one HTML page.",
   "author": {
     "name": "Dacard"

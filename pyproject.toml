@@ -1,6 +1,6 @@
 [project]
 name = "customer-signal-digest"
-version = "0.3.3"
+version = "0.3.4"
 description = "A Claude skill that reads what customers said about a shipped bet against its landing brief, with every figure computed in code."
 requires-python = ">=3.11"
 # Standard library only, on purpose: the scripts run inside sandboxes that cannot install packages.

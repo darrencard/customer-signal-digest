@@ -6,6 +6,8 @@ Install the customer-signal-digest skill from https://github.com/darrencard/cust
 
 A free Claude skill that reads what customers said about a shipped project, against the problem its landing brief (a one-page plan: what good looks like, by when, at what cost) set out to fix.
 
+A bet is a project you expect to move a number; its bar is the target its landing brief sets.
+
 **Why it matters:** a metric can pass its target while customers still describe the old problem. This puts their words beside the project's status, counted in code, with every quote redacted and sourced.
 
 **Where it sits:** step 04 (Learn) of the Landing Loop. It reads the brief and did-it-land's `landed` key, writes only its own `signals` key, and renders one page in the Leader Report style.

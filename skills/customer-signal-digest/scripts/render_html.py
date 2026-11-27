@@ -124,19 +124,28 @@ def plain(text: str) -> str:
     return text
 
 
-FONT_FLOOR = 11  # px: no text on the page renders smaller, at any width
+FONT_FLOOR = 12  # px: no text on the page renders smaller, at any width
 FONT_SIZE = re.compile(r"(font-size\s*:\s*)(\d+(?:\.\d+)?)px")
 FONT_SHORTHAND = re.compile(r"(font\s*:[^;{}]*?)(?<![\w.-])(\d+(?:\.\d+)?)px")
 
 
 def floor_fonts(css: str) -> str:
-    """Raise every font size under 11px to 11px. The vendored template and svgkit stay byte-identical on disk;
+    """Raise every font size under 12px to 12px. The vendored template and svgkit stay byte-identical on disk;
     the floor applies to their text as the page is built, so this page's CSS has no smaller size anywhere."""
 
     def up(m: re.Match[str]) -> str:
         return f"{m.group(1)}{FONT_FLOOR if float(m.group(2)) < FONT_FLOOR else m.group(2)}px"
 
     return FONT_SHORTHAND.sub(up, FONT_SIZE.sub(up, css))
+
+
+ISO_DATE = re.compile(r"(?<![\w-])\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?Z?)?(?![\w-])")
+
+
+def keep_dates(page: str) -> str:
+    """Every ISO date in the page's text held on one line, so a heading never breaks one at a hyphen at any width."""
+    head, sep, body = page.partition("<body>")
+    return head + sep + re.sub(r">([^<]+)<", lambda m: ">" + ISO_DATE.sub(r'<span class="nw">\g<0></span>', m.group(1)) + "<", body)
 
 
 def stylesheet() -> str:
@@ -407,7 +416,7 @@ def page(key: dict[str, Any], bet: str) -> str:
         + ("; in this sample every quote and figure is invented." if ill else ".")
         + " Every figure is computed in code from the sources named.</p>"
     )
-    return (
+    return keep_dates(
         '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>{e(title)}</title><style>{floor_fonts(stylesheet() + sk.CSS + sk.SCORECARD_CSS + PAGE_CSS)}</style></head><body><main class="solo">'
         f"{cover}{detail}{more}{foot}</main></body></html>\n"

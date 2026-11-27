@@ -425,21 +425,21 @@ class Visual(unittest.TestCase):
             self.assertIn(f"Accounts to talk to, highest revenue first: {talk}", text)
         self.assertIn("highest ARR first (9010,", self.key["next_step"], "the project file keeps its own words")
 
-    def test_no_text_is_smaller_than_11px(self) -> None:
+    def test_no_text_is_smaller_than_12px(self) -> None:
         css = " ".join(re.findall(r"<style>(.*?)</style>", self.page, re.DOTALL)) + " " + " ".join(re.findall(r'style="([^"]*)"', self.page))
         sizes = re.findall(r"font-size\s*:\s*([\d.]+)px", css) + re.findall(r"font\s*:[^;{}]*?(?<![\w.-])([\d.]+)px", css)
         sizes += re.findall(r'font-size="([\d.]+)"', self.page)
         self.assertTrue(sizes)
-        self.assertEqual([s for s in sizes if float(s) < 11], [])
+        self.assertEqual([s for s in sizes if float(s) < 12], [])
         self.assertNotRegex(css, r"font-size\s*:\s*[\d.]+r?em")
-        before, after = ".a{font:400 10px/16px var(--mono)}.b{font-size:10.5px}.c{font-size:13px}", ".a{font:400 11px/16px var(--mono)}.b{font-size:11px}.c{font-size:13px}"
+        before, after = ".a{font:400 10px/16px var(--mono)}.b{font-size:11.5px}.c{font-size:13px}", ".a{font:400 12px/16px var(--mono)}.b{font-size:12px}.c{font-size:13px}"
         self.assertEqual(render_html.floor_fonts(before), after)
 
     def test_the_header_prints_the_plain_name_and_the_code_name_is_for_engineers(self) -> None:
         self.assertEqual(re.search(r'<span class="sk-meta"><span>(.*?)</span>', self.page).group(1), "Customer signals")
-        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.3."))
-        self.assertIn("Built by customer-signal-digest 0.3.3.", self.page.split("For your engineers", 1)[1])
-        self.assertIn("Built by customer-signal-digest 0.3.3.", self.md.split("## For your engineers", 1)[1])
+        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.4."))
+        self.assertIn("Built by customer-signal-digest 0.3.4.", self.page.split("For your engineers", 1)[1])
+        self.assertIn("Built by customer-signal-digest 0.3.4.", self.md.split("## For your engineers", 1)[1])
 
     def test_the_page_follows_the_sample_anatomy(self) -> None:
         body = self.page.split('<main class="solo">', 1)[1]
@@ -448,7 +448,7 @@ class Visual(unittest.TestCase):
         self.assertEqual(at, sorted(at))
         self.assertEqual(body.count("<h1>"), 1)
         self.assertIn("<details><summary>For your engineers</summary>", body)
-        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.3</span>", body)
+        self.assertIn('<span>Customer signals</span><span>As of <span class="nw">2026-11-26</span></span><span>v0.3.4</span>', body)
         self.assertNotIn("Book a call", body, "a sample is the skill's own output: no call to action")
 
 
@@ -489,7 +489,7 @@ class Sample(unittest.TestCase):
         # The stylesheet gives brass to the next step's box and its owner; the owner is the brief's decider.
         self.assertEqual(body.count('<div class="next">'), 1)
         self.assertEqual(re.findall(r'<span class="o">([^<]*)</span>', body), ["Head of Product, Quoting squad"])
-        self.assertIn('<span class="d">2026-12-10</span>', body)
+        self.assertIn('<span class="d"><span class="nw">2026-12-10</span></span>', body)
 
     def test_feedback_is_what_make_sample_writes(self) -> None:
         before = {p.name: p.read_bytes() for p in (ACME / "feedback").iterdir()}

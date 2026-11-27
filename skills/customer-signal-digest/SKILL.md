@@ -1,10 +1,10 @@
 ---
 name: customer-signal-digest
-description: Reads what customers said about a shipped project (a bet) against its landing brief (step 04 Learn of the Landing Loop), and turns customer signals (Zendesk tickets, Intercom conversations, call notes, NPS and survey exports as JSON or CSV) into a ranked list of themes. Code redacts personal data first, merges duplicates, groups signals into opportunities and ranks them by reach (accounts, and ARR when given), frequency and recency; every opportunity quotes its evidence with source IDs. Use when the user asks whether customers felt a shipped project or bet, what customers are asking for, to summarise or theme support tickets, feedback, call notes or NPS comments, to find the top customer pain points or feature requests, or to build a voice-of-customer or customer signal digest. Not for a single ticket reply or for sentiment scoring.
+description: Reads what customers said about a shipped project against its landing brief (step 04 Learn of the Landing Loop), and turns customer signals (Zendesk tickets, Intercom conversations, call notes, NPS and survey exports as JSON or CSV) into a ranked list of themes. Code redacts personal data first, merges duplicates, groups signals into opportunities and ranks them by reach (accounts, and ARR when given), frequency and recency; every opportunity quotes its evidence with source IDs. Use when the user asks whether customers felt a shipped project, what customers are asking for, to summarise or theme support tickets, feedback, call notes or NPS comments, to find the top customer pain points or feature requests, or to build a voice-of-customer or customer signal digest. Not for a single ticket reply or for sentiment scoring.
 license: MIT. See LICENSE in the repository root.
 metadata:
   author: Dacard
-  version: "0.3.3"
+  version: "0.3.4"
 ---
 
 # Customer Signal Digest
@@ -13,7 +13,7 @@ Builds one digest: a ranked table of opportunities, then each opportunity with i
 
 For a shipped project it is step 04 (Learn) of the Landing Loop. It reads the project's landing brief (a one-page plan: what good looks like, by when, at what cost) and the `landed` key of the project file, `landing/<bet>.json`, writes only the `signals` key, and renders one page for leaders (HTML in the Leader Report style, with a Markdown twin). Python 3.11 or later.
 
-In what you tell the user, say project, target and the project file; if the user says "bet", use their word. Keys, file names and flags keep their names.
+In what you tell the user, say project, target and the project file. Use the user's word, project or bet; the record key stays `bet`. Keys, file names and flags keep their names.
 
 Everything runs locally, inside this session. The scripts make no network calls. Do not send the user's data anywhere.
 

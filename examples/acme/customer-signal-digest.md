@@ -1,6 +1,6 @@
 # Quote drafting landed, but 7 customer accounts still raise the problem.
 
-Customer signals v0.3.3. As of 2026-11-26. Illustrative.
+Customer signals v0.3.4. As of 2026-11-26. Illustrative.
 
 Quote drafting is a project you expect to move a number. Its landing brief, a one-page plan (what good looks like, by when, at what cost), names the problem: Tradespeople spend evenings writing quotes by hand, so quotes go out late and lose the job. This page reads 21 signals (tickets, chats, call notes and survey comments) from 16 customer accounts, 2026-09-07 to 2026-11-24.
 
@@ -98,4 +98,4 @@ Problem gone. 5 signals from 5 accounts; 2 in the last 30 days, 2 in the 30 days
 
 Status: `landed`, copied from `landed.status` as did-it-land 0.3.5 wrote it. Check as the record stores it: `problem still raised`. 7 signals from 7 accounts say the problem is still there, 5 of them in the last 30 days.
 
-Landing brief: `quote-drafting.md`. Built by customer-signal-digest 0.3.3. With --loop and --bet, the build adds its page to the project file: the `signals` key of `landing/<bet>.json`, and no other key.
+Landing brief: `quote-drafting.md`. Built by customer-signal-digest 0.3.4. With --loop and --bet, the build adds its page to the project file: the `signals` key of `landing/<bet>.json`, and no other key.
