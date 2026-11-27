@@ -4,7 +4,7 @@ description: Reads what customers said about a shipped bet against its landing b
 license: MIT. See LICENSE in the repository root.
 metadata:
   author: Dacard
-  version: "0.3.0"
+  version: "0.3.1"
 ---
 
 # Customer Signal Digest
@@ -136,7 +136,7 @@ For a Landing Loop run, lead with the page: the bet's status exactly as printed 
 | `validate.py` | Checks the notes you write before anything renders |
 | `digest.py` | The `inspect`, `build` and `render` commands; `build --loop` writes the `signals` key |
 | `loop.py` | Reads `landing/<bet>.json` and its brief, prints `landed.status`, computes the check, writes only `signals` |
-| `render_html.py` | The page in the Leader Report style, and its Markdown twin |
-| `vendor/` | Copied unchanged from the Leader Report at the commit in `VENDORED.json`: the brief parser, the page reader, the Zendesk and Intercom collectors, and the template |
+| `render_html.py` | The page in the Leader Report style and the Landing Loop's one visual family (the verdict as the heading, two stacks of signals, one next step, engineering detail folded), and its Markdown twin |
+| `vendor/` | Copied unchanged from the Leader Report at the commit in `VENDORED.json`: the brief parser, the page reader, the Zendesk and Intercom collectors, and the template. `svgkit.py`, which draws the page's picture, is copied unchanged from landing-loop at the commit under `landing-loop` in the same file |
 
 Known names are never written to disk: `run/fingerprints.json` holds only salted hashes, so the validator can check your notes for them.

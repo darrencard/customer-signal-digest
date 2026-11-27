@@ -51,13 +51,13 @@ Every figure carries value, unit, source, window and as_of. Shortened:
 
 ```json
 "signals": {
-  "tool": "customer-signal-digest 0.3.0",
+  "tool": "customer-signal-digest 0.3.1",
   "as_of": "2026-11-26",
   "window": {"from": "2026-09-07", "to": "2026-11-24"},
   "check": "problem still raised",
   "bet_status": {"status": "landed", "printed_from": "landed.status", "computed_by": "did-it-land 0.3.1"},
   "figures": {
-    "problem_last_30_days": {"value": 5, "unit": "signals", "source": "customer-signal-digest 0.3.0: problem-side signals in the last 30 days; Zendesk: ...", "window": {"from": "2026-10-28", "to": "2026-11-24"}, "as_of": "2026-11-26"}
+    "problem_last_30_days": {"value": 5, "unit": "signals", "source": "customer-signal-digest 0.3.1: problem-side signals in the last 30 days; Zendesk: ...", "window": {"from": "2026-10-28", "to": "2026-11-24"}, "as_of": "2026-11-26"}
   },
   "themes": [{"id": "quote-line-items", "side": "problem", "quotes": [{"text": "Quote drafts keep missing line items. ...", "ids": ["nps:N-01"], "illustrative": true}]}],
   "next_step": "Talk to the 7 accounts on the problem side, highest ARR first ...",

@@ -1,6 +1,6 @@
 [project]
 name = "customer-signal-digest"
-version = "0.3.0"
+version = "0.3.1"
 description = "A Claude skill that reads what customers said about a shipped bet against its landing brief, with every figure computed in code."
 requires-python = ">=3.11"
 # Standard library only, on purpose: the scripts run inside sandboxes that cannot install packages.
@@ -19,8 +19,10 @@ select = ["E", "F", "I", "B", "UP", "SIM", "S"]
 
 [tool.ruff.lint.isort]
 # The scripts and the eval helpers are found through sys.path, so they sort as first-party.
-known-first-party = ["cluster", "convert", "dedupe", "digest", "helpers", "landing_brief", "loop", "rank", "redact", "render_html", "signals", "validate"]
+known-first-party = ["cluster", "convert", "dedupe", "digest", "helpers", "landing_brief", "loop", "rank", "redact", "render_html", "signals", "svgkit", "validate"]
 
 [tool.ruff.lint.per-file-ignores]
 # Tests use assert in class setup and write to a temporary directory.
 "evals/**" = ["S101", "S108", "S603"]
+# The page's CSS and plain-words tables read best one rule or entry per line.
+"skills/customer-signal-digest/scripts/render_html.py" = ["E501"]

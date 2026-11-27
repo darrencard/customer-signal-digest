@@ -41,6 +41,7 @@ import digest  # noqa: E402
 import loop  # noqa: E402
 import render_html  # noqa: E402
 import signals  # noqa: E402
+import svgkit  # noqa: E402
 
 STATUS = re.compile(r"\b(landed|watch|stalled)\b", re.I)
 
@@ -202,16 +203,19 @@ class Figures(unittest.TestCase):
                     self.assertTrue(any(p == f"{q}.value" for q in inside), p)
 
     def test_page_figures_come_from_the_key(self) -> None:
-        """Every number on the page's cover facts is a figure value in the key."""
+        """Every bold number in the page's figures column is a figure value in the key."""
         key = json.loads((ACME / "landing" / "quote-drafting.json").read_text())["signals"]
         page = (ACME / "customer-signal-digest.html").read_text()
-        facts = re.findall(r"<span><b>([^<]+)</b>", page)
+        figs = page.split('<dl class="figs">', 1)[1].split("</dl>", 1)[0]
+        facts = re.findall(r"<b>([^<]+)</b>", figs)
+        self.assertEqual(len(facts), 4)
         values = {str(d["value"]) for _, d in walk(key) if isinstance(d, dict) and "value" in d} | {
             f"{d['value']:g}%" for _, d in walk(key) if isinstance(d, dict) and d.get("unit") == "%"
         }
+        values.add(key["brief"]["bar"])  # the target, as the landing brief states it
         for f in facts:
             with self.subTest(f):
-                self.assertIn(f.replace(",", ""), values)
+                self.assertIn(re.sub(r" signals?$", "", f).replace(",", ""), values)
 
 
 class StatusWords(unittest.TestCase):
@@ -221,16 +225,19 @@ class StatusWords(unittest.TestCase):
         # bet_status.value is the copy; printed_from and the copied figure's source name where it came from.
         self.assertEqual([p for p in hits if p not in ("bet_status.status", "bet_status.printed_from")], [])
 
-    def test_page_prints_status_once_in_its_mark(self) -> None:
+    def test_page_prints_status_only_as_copied(self) -> None:
+        """The status word prints in its mark, the heading and the engineers' note, and is always the copied one."""
         page = (ACME / "customer-signal-digest.html").read_text()
         body = re.sub(r"<style>.*?</style>", "", page, flags=re.S)
-        body = body.replace('<span class="st landed">landed</span>', "")
-        body = body.replace("landed.status", "")
-        self.assertEqual(STATUS.findall(re.sub(r"<[^>]+>", " ", body)), [])
+        self.assertEqual(body.count('<span class="st landed">landed</span>'), 1)
+        self.assertIn("<h1>Quote drafting landed, but 7 customer accounts still raise the problem.</h1>", body)
+        words = STATUS.findall(re.sub(r"<[^>]+>", " ", body.replace("landed.status", "")))
+        self.assertEqual(set(words), {"landed"})
 
-    def test_markdown_prints_status_once(self) -> None:
+    def test_markdown_prints_status_only_as_copied(self) -> None:
         md = (ACME / "customer-signal-digest.md").read_text().replace("landed.status", "")
-        self.assertEqual(STATUS.findall(md), ["landed"])
+        self.assertEqual(set(STATUS.findall(md)), {"landed"})
+        self.assertTrue(md.startswith("# Quote drafting landed, but 7 customer accounts still raise the problem.\n"))
 
     def test_check_words_are_its_own(self) -> None:
         for w in loop.CHECK_WORDS:
@@ -306,6 +313,72 @@ class Floor(unittest.TestCase):
             self.assertEqual((into / "landing" / "quote-drafting.json").read_bytes(), before)
 
 
+class Visual(unittest.TestCase):
+    """The page in the Landing Loop's one visual family: svgkit pinned, the picture honest, the words plain."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.page = (ACME / "customer-signal-digest.html").read_text()
+        cls.md = (ACME / "customer-signal-digest.md").read_text()
+        cls.key = json.loads((ACME / "landing" / "quote-drafting.json").read_text())["signals"]
+
+    def test_svgkit_matches_its_landing_loop_pin(self) -> None:
+        pin = json.loads((SKILL / "VENDORED.json").read_text())["landing-loop"]
+        self.assertEqual(pin["commit"], "5d01756d08ab3eb92b457c3286729791df6bcf5f")
+        self.assertEqual(set(pin["files"]), {"scripts/vendor/svgkit.py"})
+        for rel, info in pin["files"].items():
+            digest_ = hashlib.sha256((SKILL / rel).read_bytes()).hexdigest()
+            self.assertEqual(digest_, info["sha256"], f"{rel} changed. Copy it again from landing-loop at the pinned commit and update VENDORED.json.")
+
+    def test_the_visual_draws_only_figures_the_page_prints(self) -> None:
+        self.assertEqual(len(svgkit.visuals_in(self.page)), 2, "the wide picture and the tall one")
+        self.assertEqual(svgkit.unprinted(self.page), [])
+        drawn = {t for svg in svgkit.visuals_in(self.page) for t in svgkit.numbers_in(svg)}
+        self.assertEqual(drawn, {"7", "5", "2", "30"})
+        f = self.key["figures"]
+        for svg in svgkit.visuals_in(self.page):
+            # One block per signal on each side, and the last 30 days filled in ink.
+            self.assertEqual(svg.count('rx="4"'), f["problem_signals"]["value"] + f["praise_signals"]["value"])
+            self.assertEqual(svg.count('fill="var(--t1)"'), f["problem_last_30_days"]["value"] + 2)
+
+    def test_green_and_red_only_beside_their_words(self) -> None:
+        body = self.page.split("</style>", 1)[1]
+        rest = re.sub(r'<span class="st (landed|stalled)">\1</span>', "", body)
+        for word in ("landed", "stalled"):
+            self.assertNotIn(f"var(--{word})", rest)
+            self.assertNotIn(f"st {word}", rest)
+        self.assertEqual(body.count('<span class="st landed">landed</span>'), 1)
+
+    def test_each_visual_states_its_answer(self) -> None:
+        labels = re.findall(r'<svg class="sk-(?:wide|tall)"[^>]* aria-label="([^"]+)"', self.page)
+        self.assertEqual(len(labels), 2)
+        for label in labels:
+            self.assertEqual(
+                label,
+                "7 signals from 7 accounts say customers still feel the problem, 5 in the last 30 days; "
+                "5 signals from 5 accounts say it is gone, 2 in the last 30 days. Problem still raised.",
+            )
+
+    def test_public_copy_uses_plain_words(self) -> None:
+        public = svgkit.page_text(self.page.split("For your engineers", 1)[0]).lower()
+        md = self.md.split("## For your engineers", 1)[0].lower()
+        for text in (public, md):
+            for word in (" bet ", " bets ", " bar ", ".json", "landed.status", "signals key", "eval"):
+                self.assertNotIn(word, text)
+        self.assertIn("<b>landing brief</b>, a one-page plan (what good looks like, by when, at what cost)", self.page)
+        self.assertIn("is a project you expect to move a number", self.page)
+
+    def test_the_page_follows_the_sample_anatomy(self) -> None:
+        body = self.page.split('<main class="solo">', 1)[1]
+        order = ['class="sk-hdr"', "<h1>", 'class="marks"', 'class="panel"', "What to do next", 'class="cols"', "For your engineers"]
+        at = [body.index(x) for x in order]
+        self.assertEqual(at, sorted(at))
+        self.assertEqual(body.count("<h1>"), 1)
+        self.assertIn("<details><summary>For your engineers</summary>", body)
+        self.assertIn("<span>customer-signal-digest</span><span>As of 2026-11-26</span><span>v0.3.1</span>", body)
+        self.assertNotIn("Book a call", body, "a sample is the skill's own output: no call to action")
+
+
 class Colour(unittest.TestCase):
     def test_selection_and_focus_print_in_ink_not_green(self) -> None:
         css = re.search(r"<style>(.*?)</style>", (ACME / "customer-signal-digest.html").read_text(), re.S).group(1)
@@ -331,12 +404,19 @@ class Sample(unittest.TestCase):
     def test_page_is_self_contained(self) -> None:
         page = (ACME / "customer-signal-digest.html").read_text()
         self.assertNotRegex(page, r"<script|<link|src=\"http|url\(http|@import")
-        self.assertIn('class="ill"', page)
+        self.assertIn('<span class="sk-ill">Illustrative</span>', page)
+        self.assertIn(":root{--ill:#74A5DA}", page, "the Illustrative tag is blue")
+        self.assertNotIn('class="ill"', page, "the template's grey tag")
 
     def test_brass_only_for_the_person_who_decides(self) -> None:
         body = re.sub(r"<style>.*?</style>", "", (ACME / "customer-signal-digest.html").read_text(), flags=re.S)
-        uses = re.findall(r"[^<>]{0,0}<[^>]*var\(--brass\)[^>]*>([^<]*)", body)
-        self.assertEqual([u for u in uses if u], ["Decides: Head of Product, Quoting squad"])
+        # Inline, brass paints only the four-bar mark's person line, which carries no text.
+        uses = re.findall(r"<[^>]*var\(--brass\)[^>]*>([^<]*)", body)
+        self.assertEqual([u for u in uses if u], [])
+        # The stylesheet gives brass to the next step's box and its owner; the owner is the brief's decider.
+        self.assertEqual(body.count('<div class="next">'), 1)
+        self.assertEqual(re.findall(r'<span class="o">([^<]*)</span>', body), ["Head of Product, Quoting squad"])
+        self.assertIn('<span class="d">2026-12-10</span>', body)
 
     def test_feedback_is_what_make_sample_writes(self) -> None:
         before = {p.name: p.read_bytes() for p in (ACME / "feedback").iterdir()}

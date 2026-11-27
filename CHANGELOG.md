@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1, 2026-11-27
+
+- The HTML page follows the Landing Loop sample anatomy: the shared header (mark, DACARD, skill, date, version, blue Illustrative tag), the verdict as the heading ("Quote drafting landed, but 7 customer accounts still raise the problem."), the project's status from did-it-land beside the customer check, the signature picture, one next step with the brief's decider in brass and a due date, then the quotes and the figures in two columns. Other themes fold away; the evidence ledger, sources, ranks, file names and the record key fold under "For your engineers".
+- The signature picture: two stacks of signals, "still feel the problem" against "problem gone", one block per signal, the last 30 days in ink. A 640 wide variant for desktop and a 340 wide one for phones; the aria-label states the answer. Drawn with svgkit, vendored byte-identical from landing-loop and pinned in `VENDORED.json` under `landing-loop`.
+- Public copy in plain words, on the page and in the Markdown twin: project, target, landing brief (defined at first use), the project file. The record's words are unchanged.
+- The Illustrative tag is the family's blue, not the template's grey.
+- Tests: the picture draws only printed figures, green appears only beside the word landed, the aria-label states the answer, public copy uses the plain words, and the vendored svgkit matches its pin.
+
 ## 0.3.0, 2026-11-26
 
 - Step 04 (Learn) of the Landing Loop. `build --loop FOLDER --bet SLUG` reads the bet's brief and the `landed` key of `landing/<bet>.json`, and writes only the `signals` key, every figure with value, unit, source, window and as_of. Every other key is kept byte for byte.
