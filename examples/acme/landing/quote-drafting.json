@@ -1,0 +1,926 @@
+{
+  "schema": "landing-loop/1",
+  "bet": "quote-drafting",
+  "brief": {
+    "path": "briefs/quote-drafting.md",
+    "sha256": "decbe39590cc57b3d47125722a8d43e445d33c8f2f525c00277b94b7937dc95f"
+  },
+  "landed": {
+    "status": "landed",
+    "reason": "Past the bar of 40% by 2026-11-15.",
+    "computed_by": "did-it-land 0.3.0",
+    "as_of": "2026-11-26T09:00:00Z",
+    "metric": "Quote draft acceptance rate",
+    "better": "higher",
+    "by": "2026-11-15",
+    "shipped": "2026-09-07",
+    "figures": {
+      "current": {
+        "value": 43.0,
+        "unit": "%",
+        "source": "Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-23"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "bar": {
+        "value": 40.0,
+        "unit": "%",
+        "source": "landing brief: quote-drafting.md",
+        "window": {
+          "from": null,
+          "to": "2026-11-15"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "at_date": {
+        "value": 41.0,
+        "unit": "%",
+        "source": "Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-09"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "baseline_mean": {
+        "value": 22.17,
+        "unit": "%",
+        "source": "Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-07-27",
+          "to": "2026-08-31"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "baseline_sd": {
+        "value": 0.75,
+        "unit": "%",
+        "source": "Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-07-27",
+          "to": "2026-08-31"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "move_z": {
+        "value": 25.02,
+        "unit": "sd",
+        "source": "computed from Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-07-27",
+          "to": "2026-11-09"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "outcome_from": {
+        "value": 31.0,
+        "unit": "number",
+        "source": "Illustrative CRM export, quotes_won_weekly.csv",
+        "window": {
+          "from": "2026-08-31",
+          "to": "2026-08-31"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      },
+      "outcome_to": {
+        "value": 36.0,
+        "unit": "number",
+        "source": "Illustrative CRM export, quotes_won_weekly.csv",
+        "window": {
+          "from": "2026-08-31",
+          "to": "2026-11-23"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      }
+    },
+    "flags": [],
+    "next_step": "Keep the metric on the scorecard, and decide whether to scale the bet.",
+    "decides": "Head of Product, Quoting squad"
+  },
+  "signals": {
+    "tool": "customer-signal-digest 0.3.0",
+    "as_of": "2026-11-26",
+    "window": {
+      "from": "2026-09-07",
+      "to": "2026-11-24"
+    },
+    "illustrative": true,
+    "check": "problem still raised",
+    "check_reason": "7 signals from 7 accounts say the problem is still there, 5 of them in the last 30 days.",
+    "bet_status": {
+      "status": "landed",
+      "printed_from": "landed.status",
+      "computed_by": "did-it-land 0.3.0",
+      "metric": "Quote draft acceptance rate",
+      "current": {
+        "value": 43.0,
+        "unit": "%",
+        "source": "Illustrative product analytics export, quote_drafts_weekly.csv",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-23"
+        },
+        "as_of": "2026-11-26T09:00:00Z"
+      }
+    },
+    "brief": {
+      "path": "quote-drafting.md",
+      "problem": "Tradespeople spend evenings writing quotes by hand, so quotes go out late and lose the job.",
+      "metric": "Quote draft acceptance rate",
+      "bar": "40%",
+      "better": "higher",
+      "by": "2026-11-15"
+    },
+    "figures": {
+      "signals": {
+        "value": 21,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: signals in the window after duplicates were merged; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "accounts": {
+        "value": 16,
+        "unit": "accounts",
+        "source": "customer-signal-digest 0.3.0: distinct accounts named on those signals; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "on_bet_signals": {
+        "value": 12,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: signals in themes tied to quote-drafting; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "on_bet_share": {
+        "value": 57.1,
+        "unit": "%",
+        "source": "customer-signal-digest 0.3.0: signals in themes tied to quote-drafting / all signals; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "problem_signals": {
+        "value": 7,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: signals in themes on the problem side; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "problem_accounts": {
+        "value": 7,
+        "unit": "accounts",
+        "source": "customer-signal-digest 0.3.0: distinct accounts on the problem side; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "problem_last_30_days": {
+        "value": 5,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: problem-side signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-10-28",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "problem_prior_30_days": {
+        "value": 2,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: problem-side signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-28",
+          "to": "2026-10-27"
+        },
+        "as_of": "2026-11-26"
+      },
+      "praise_signals": {
+        "value": 5,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: signals in themes on the praise side; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "praise_accounts": {
+        "value": 5,
+        "unit": "accounts",
+        "source": "customer-signal-digest 0.3.0: distinct accounts on the praise side; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      }
+    },
+    "themes": [
+      {
+        "id": "quote-line-items",
+        "name": "Quote drafts miss line items",
+        "side": "problem",
+        "rank": {
+          "value": 1,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 7,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 7,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 5,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 2,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 111600.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 7 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9010",
+          "9003",
+          "9001",
+          "9007",
+          "9012",
+          "9005",
+          "9008"
+        ],
+        "quotes": [
+          {
+            "text": "Quote drafts keep missing line items. I check every one by hand now.",
+            "ids": [
+              "nps:N-01"
+            ],
+            "created": "2026-11-21",
+            "illustrative": true
+          },
+          {
+            "text": "The quote draft left off the materials for the boiler swap. Copper pipe and fittings were missing.",
+            "ids": [
+              "intercom:215001",
+              "zendesk:4101"
+            ],
+            "created": "2026-11-20",
+            "illustrative": true
+          },
+          {
+            "text": "Spoke with [NAME]. Their estimators stopped using AI quote drafts because line items for materials go missing. They re-key every quote.",
+            "ids": [
+              "calls:C-301"
+            ],
+            "created": "2026-11-19",
+            "illustrative": true
+          }
+        ]
+      },
+      {
+        "id": "quotes-same-day",
+        "name": "Quotes go out the same day",
+        "side": "praise",
+        "rank": {
+          "value": 2,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 5,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 5,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 2,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 2,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 44400.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 5 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9013",
+          "9002",
+          "9011",
+          "9015",
+          "9014"
+        ],
+        "quotes": [
+          {
+            "text": "Love that quotes go out the same day now. Customers notice.",
+            "ids": [
+              "intercom:215006"
+            ],
+            "created": "2026-11-16",
+            "illustrative": true
+          },
+          {
+            "text": "Drafting a quote takes minutes now, not my evenings.",
+            "ids": [
+              "nps:N-08"
+            ],
+            "created": "2026-11-09",
+            "illustrative": true
+          },
+          {
+            "text": "Quotes go out the same day now. Got my evenings back.",
+            "ids": [
+              "nps:N-07"
+            ],
+            "created": "2026-10-20",
+            "illustrative": true
+          }
+        ]
+      },
+      {
+        "id": "chaser-paid-invoices",
+        "name": "Invoice chasers go to customers who already paid",
+        "side": "other",
+        "rank": {
+          "value": 3,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 4,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 4,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 4,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 0,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 33600.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 4 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9006",
+          "9002",
+          "9011",
+          "9014"
+        ],
+        "quotes": [
+          {
+            "text": "Reminders go out to customers who already paid. Stop the chase once paid please.",
+            "ids": [
+              "nps:N-04"
+            ],
+            "created": "2026-11-23",
+            "illustrative": true
+          },
+          {
+            "text": "Reminder went to a customer who already paid Your invoice chaser emailed my customer a reminder even though they already paid by card ending 4242 last week. Very embarrassing. My name is [NAME].",
+            "ids": [
+              "zendesk:4102"
+            ],
+            "created": "2026-11-18",
+            "illustrative": true
+          },
+          {
+            "text": "Chasing emails keep going to clients who already paid. Please stop the reminder once the payment matches.",
+            "ids": [
+              "intercom:215004"
+            ],
+            "created": "2026-11-10",
+            "illustrative": true
+          }
+        ]
+      },
+      {
+        "id": "offline-sync",
+        "name": "Mobile app loses job notes offline",
+        "side": "other",
+        "rank": {
+          "value": 4,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 2,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 2,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 1,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 1,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 20400.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 2 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9006",
+          "9009"
+        ],
+        "quotes": [
+          {
+            "text": "The mobile app goes offline in basements and loses job notes. Email me at [EMAIL]",
+            "ids": [
+              "nps:N-03"
+            ],
+            "created": "2026-11-08",
+            "illustrative": true
+          },
+          {
+            "text": "Job notes lost offline Mobile app lost my job notes when I went offline in a basement. They never synced.",
+            "ids": [
+              "zendesk:4105"
+            ],
+            "created": "2026-10-22",
+            "illustrative": true
+          }
+        ]
+      },
+      {
+        "id": "accounting-export",
+        "name": "Accounting export puts the wrong tax code on labour",
+        "side": "other",
+        "rank": {
+          "value": 5,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 2,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 1,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 1,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 1,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 12000.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 1 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9004"
+        ],
+        "quotes": [
+          {
+            "text": "[NAME] walked through the accounting export. Tax code on labour lines is wrong every month and the bookkeeper fixes the ledger by hand.",
+            "ids": [
+              "calls:C-302"
+            ],
+            "created": "2026-11-10",
+            "illustrative": true
+          },
+          {
+            "text": "Accounting export tax code wrong The accounting export puts the wrong tax code on every labour line. Our bookkeeper has to fix it by hand each month.",
+            "ids": [
+              "zendesk:4104"
+            ],
+            "created": "2026-10-02",
+            "illustrative": true
+          }
+        ]
+      },
+      {
+        "id": "unnamed-1",
+        "name": "Unnamed: app, dark, early",
+        "side": "other",
+        "rank": {
+          "value": 6,
+          "unit": "rank of 6 themes",
+          "source": "customer-signal-digest 0.3.0: reach, frequency and recency, ranked in code; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        },
+        "figures": {
+          "signals": {
+            "value": 1,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: deduplicated signals in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "accounts": {
+            "value": 1,
+            "unit": "accounts",
+            "source": "customer-signal-digest 0.3.0: distinct accounts in this theme; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "last_30_days": {
+            "value": 0,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the last 30 days; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-10-28",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          },
+          "prior_30_days": {
+            "value": 0,
+            "unit": "signals",
+            "source": "customer-signal-digest 0.3.0: signals in the 30 days before; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-28",
+              "to": "2026-10-27"
+            },
+            "as_of": "2026-11-26"
+          },
+          "arr": {
+            "value": 3600.0,
+            "unit": "ARR",
+            "source": "customer-signal-digest 0.3.0: summed ARR of 1 accounts, from the accounts file; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+            "window": {
+              "from": "2026-09-07",
+              "to": "2026-11-24"
+            },
+            "as_of": "2026-11-26"
+          }
+        },
+        "talk_to": [
+          "9016"
+        ],
+        "quotes": [
+          {
+            "text": "Dark mode Could the mobile app have a dark mode for early starts?",
+            "ids": [
+              "zendesk:4106"
+            ],
+            "created": "2026-09-15",
+            "illustrative": true
+          }
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "system": "Zendesk",
+        "files": [
+          "zendesk-page-1.json",
+          "zendesk-page-2.json"
+        ],
+        "how": "Live: API pages saved as returned",
+        "signals": {
+          "value": 9,
+          "unit": "signals",
+          "source": "customer-signal-digest 0.3.0: read from Zendesk; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        }
+      },
+      {
+        "system": "Intercom",
+        "files": [
+          "intercom-conversations.json"
+        ],
+        "how": "Live: API pages saved as returned",
+        "signals": {
+          "value": 4,
+          "unit": "signals",
+          "source": "customer-signal-digest 0.3.0: read from Intercom; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        }
+      },
+      {
+        "system": "CSV (calls)",
+        "files": [
+          "calls.csv"
+        ],
+        "how": "CSV fallback",
+        "signals": {
+          "value": 5,
+          "unit": "signals",
+          "source": "customer-signal-digest 0.3.0: read from CSV (calls); Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        }
+      },
+      {
+        "system": "CSV (nps)",
+        "files": [
+          "nps.csv"
+        ],
+        "how": "CSV fallback",
+        "signals": {
+          "value": 7,
+          "unit": "signals",
+          "source": "customer-signal-digest 0.3.0: read from CSV (nps); Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+          "window": {
+            "from": "2026-09-07",
+            "to": "2026-11-24"
+          },
+          "as_of": "2026-11-26"
+        }
+      }
+    ],
+    "left_out": {
+      "nps rows with no text": {
+        "value": 1,
+        "unit": "rows",
+        "source": "customer-signal-digest 0.3.0: left out: nps rows with no text; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "signals before 2026-09-07 or undated": {
+        "value": 1,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: left out: signals before 2026-09-07 or undated; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      },
+      "signals after 2026-11-24": {
+        "value": 1,
+        "unit": "signals",
+        "source": "customer-signal-digest 0.3.0: left out: signals after 2026-11-24; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+        "window": {
+          "from": "2026-09-07",
+          "to": "2026-11-24"
+        },
+        "as_of": "2026-11-26"
+      }
+    },
+    "duplicates_merged": {
+      "value": 2,
+      "unit": "signals",
+      "source": "customer-signal-digest 0.3.0: signals merged into another as the same complaint; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+      "window": {
+        "from": "2026-09-07",
+        "to": "2026-11-24"
+      },
+      "as_of": "2026-11-26"
+    },
+    "redacted_spans": {
+      "value": 16,
+      "unit": "spans",
+      "source": "customer-signal-digest 0.3.0: personal-data spans replaced before grouping; Zendesk: zendesk-page-1.json, zendesk-page-2.json; Intercom: intercom-conversations.json; CSV (calls): calls.csv; CSV (nps): nps.csv (illustrative)",
+      "window": {
+        "from": "2026-09-07",
+        "to": "2026-11-24"
+      },
+      "as_of": "2026-11-26"
+    },
+    "next_step": "Talk to the 7 accounts on the problem side, highest ARR first (9010, 9003, 9001, 9007, 9012, 9005, 9008), before deciding whether to scale the bet.",
+    "decides": "Head of Product, Quoting squad"
+  }
+}

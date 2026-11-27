@@ -1,24 +1,26 @@
 [project]
 name = "customer-signal-digest"
-version = "0.1.0"
-description = "A Claude skill that turns support tickets, call notes and NPS answers into ranked, evidenced, redacted opportunities."
-requires-python = ">=3.9"
+version = "0.3.0"
+description = "A Claude skill that reads what customers said about a shipped bet against its landing brief, with every figure computed in code."
+requires-python = ">=3.11"
 # Standard library only, on purpose: the scripts run inside sandboxes that cannot install packages.
 dependencies = []
 
 [tool.ruff]
-line-length = 160
-target-version = "py39"
+line-length = 180
+target-version = "py311"
+# Copied unchanged from the Leader Report at a pinned commit (VENDORED.json); linted there, never edited here.
+extend-exclude = ["skills/customer-signal-digest/scripts/vendor"]
 
 [tool.ruff.lint]
-# E, F: errors and unused names. I: import order. B: likely bugs. UP: syntax older than Python 3.9.
+# E, F: errors and unused names. I: import order. B: likely bugs. UP: old syntax.
 # SIM: needless complexity. S: security (bandit).
 select = ["E", "F", "I", "B", "UP", "SIM", "S"]
 
 [tool.ruff.lint.isort]
 # The scripts and the eval helpers are found through sys.path, so they sort as first-party.
-known-first-party = ["cluster", "dedupe", "digest", "helpers", "rank", "redact", "signals", "validate"]
+known-first-party = ["cluster", "convert", "dedupe", "digest", "helpers", "landing_brief", "loop", "rank", "redact", "render_html", "signals", "validate"]
 
 [tool.ruff.lint.per-file-ignores]
 # Tests use assert in class setup and write to a temporary directory.
-"evals/**" = ["S101", "S108"]
+"evals/**" = ["S101", "S108", "S603"]

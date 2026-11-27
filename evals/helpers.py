@@ -1,6 +1,6 @@
 """Shared helpers for the evals: the scripts on the path, and one run of the full pipeline on the Acme fixture.
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations

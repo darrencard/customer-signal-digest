@@ -1,0 +1,63 @@
+{
+  "opportunities": [
+    {
+      "id": "quote-line-items",
+      "name": "Quote drafts miss line items",
+      "bet": "quote-drafting",
+      "side": "problem",
+      "keywords": [
+        "line items",
+        "line item",
+        "left off",
+        "quote draft",
+        "quote drafts",
+        "drafted quote",
+        "re-key"
+      ]
+    },
+    {
+      "id": "quotes-same-day",
+      "name": "Quotes go out the same day",
+      "bet": "quote-drafting",
+      "side": "praise",
+      "keywords": [
+        "same day",
+        "evenings",
+        "takes minutes",
+        "take minutes"
+      ]
+    },
+    {
+      "id": "chaser-paid-invoices",
+      "name": "Invoice chasers go to customers who already paid",
+      "keywords": [
+        "already paid",
+        "chaser",
+        "reminder",
+        "reminders",
+        "chase",
+        "chasing"
+      ]
+    },
+    {
+      "id": "offline-sync",
+      "name": "Mobile app loses job notes offline",
+      "keywords": [
+        "offline",
+        "synced",
+        "sync"
+      ]
+    },
+    {
+      "id": "accounting-export",
+      "name": "Accounting export puts the wrong tax code on labour",
+      "keywords": [
+        "accounting export",
+        "tax code",
+        "tax codes",
+        "ledger",
+        "bookkeeper"
+      ]
+    }
+  ]
+}

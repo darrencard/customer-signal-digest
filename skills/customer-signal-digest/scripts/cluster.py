@@ -11,9 +11,14 @@
 
 themes.json:
   {"opportunities": [{"id": "quote-line-items", "name": "Quote drafts miss line items",
-                      "keywords": ["line item", "missing items", "quote draft"]}]}
+                      "keywords": ["line item", "missing items", "quote draft"],
+                      "bet": "quote-drafting", "side": "problem"}]}
 
-Standard library only. Runs on Python 3.9 or later.
+"bet" and "side" are optional and go together. They tie a theme to a shipped bet: side "problem" when its
+signals say the brief's problem is still there, "praise" when they say it is gone. The person confirms both;
+code never guesses which themes are about the bet.
+
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations
@@ -25,6 +30,7 @@ from pathlib import Path
 from signals import Refused, load_json
 
 SIMILAR = 0.3
+SIDES = ("problem", "praise")
 
 STOP = frozenset(
     re.findall(
@@ -73,7 +79,10 @@ def load_themes(path: str | None) -> list[dict]:
             raise Refused(f"{path}: the id {oid!r} appears twice.")
         seen.add(oid)
         kws = [str(k).lower().strip() for k in o.get("keywords") or [] if str(k).strip()]
-        out.append({"id": oid, "name": str(o["name"]), "keywords": kws})
+        bet, side = str(o.get("bet") or "").strip(), str(o.get("side") or "").strip()
+        if bool(bet) != bool(side) or (side and side not in SIDES):
+            raise Refused(f'{path}: {oid} ties itself to a bet with both "bet" (the bet\'s slug) and "side" ({" or ".join(SIDES)}), or neither. Got bet={bet!r}, side={side!r}.')
+        out.append({"id": oid, "name": str(o["name"]), "keywords": kws, "bet": bet, "side": side})
     return out
 
 
@@ -86,14 +95,14 @@ def cluster(signals: list[dict], themes: list[dict], similar: float = SIMILAR) -
     """Opportunities as {"id", "name", "how", "signals": [...]}, in theme-map order, then tag order, then unnamed.
     Each signal carries `grouped_by` (source tag, keywords or similarity); `how` lists the ways used in the group."""
     by_key = {t["id"]: t for t in themes} | {t["name"].lower(): t for t in themes}
-    groups: dict[str, dict] = {t["id"]: {"id": t["id"], "name": t["name"], "how": "", "signals": []} for t in themes}
+    groups: dict[str, dict] = {t["id"]: {"id": t["id"], "name": t["name"], "how": "", "bet": t.get("bet", ""), "side": t.get("side", ""), "signals": []} for t in themes}
     rest: list[dict] = []
     for s in signals:
         tag = (s.get("theme") or "").strip()
         if tag:
             t = by_key.get(slug(tag)) or by_key.get(tag.lower())
             gid = t["id"] if t else slug(tag)
-            groups.setdefault(gid, {"id": gid, "name": tag, "how": "", "signals": []})["signals"].append({**s, "grouped_by": "source tag"})
+            groups.setdefault(gid, {"id": gid, "name": tag, "how": "", "bet": "", "side": "", "signals": []})["signals"].append({**s, "grouped_by": "source tag"})
             continue
         scores = [(_hits(s["text"], t["keywords"]), -i, t["id"]) for i, t in enumerate(themes)]
         best = max(scores, default=(0, 0, ""))
@@ -118,7 +127,7 @@ def cluster(signals: list[dict], themes: list[dict], similar: float = SIMILAR) -
         shown = _surface(members)
         top = [shown.get(t, t) for t, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:3]]
         gid = f"unnamed-{n}"
-        groups[gid] = {"id": gid, "name": f"Unnamed: {', '.join(top) or 'no content words'}", "how": "", "signals": members}
+        groups[gid] = {"id": gid, "name": f"Unnamed: {', '.join(top) or 'no content words'}", "how": "", "bet": "", "side": "", "signals": members}
     out = [g for g in groups.values() if g["signals"]]
     for g in out:
         g["how"] = " and ".join(sorted({s["grouped_by"] for s in g["signals"]}))

@@ -28,7 +28,7 @@ file), `account_share` is accounts as a percentage of it, to one decimal place.
 
 Scores are relative to the most-raised opportunity in this run, so compare ranks across digests, not scores.
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations

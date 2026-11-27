@@ -16,7 +16,7 @@ What it removes, each replaced with a bracketed label:
 The rules are patterns, so they can miss. `leaks()` re-checks redacted text with the same patterns and the
 known names, and the digest refuses to quote any text where it finds one.
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations
@@ -33,9 +33,7 @@ CARD_CANDIDATE = re.compile(r"\b(?:\d[ -]?){12,18}\d\b")
 PHONE = re.compile(r"(?<![\w-])(?:\+\d[\d ().-]{7,18}\d|\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}|0\d{2,4}[ ]\d{3,4}[ ]\d{3,4})(?![\w-])")
 IPV4 = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b")
 POSTCODE = re.compile(r"\b(?:[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}|[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] ?\d[ABCEGHJ-NPRSTV-Z]\d)\b")
-ADDRESS = re.compile(
-    r"\b\d{1,5}\s+(?:[A-Z][a-z]+\s+){1,3}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Way|Close|Crescent|Court|Ct|Boulevard|Blvd|Place|Pl)\b\.?"
-)
+ADDRESS = re.compile(r"\b\d{1,5}\s+(?:[A-Z][a-z]+\s+){1,3}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Way|Close|Crescent|Court|Ct|Boulevard|Blvd|Place|Pl)\b\.?")
 _NAME = r"[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?(?:\s+[A-Z][a-z]+(?:[-'][A-Z][a-z]+)?)?"
 INTRO = re.compile(r"\b(?i:my name is|my name's|this is|speaking with|spoke with|spoke to|talked to|call with)\s+(" + _NAME + r")")
 TITLE = re.compile(r"\b(?:Mr|Mrs|Ms|Miss|Mx|Dr)\.?\s+(" + _NAME + r")")

@@ -14,19 +14,27 @@ Every signal becomes:
 plus a set of known personal strings (names, emails) found in the record's metadata, kept apart from the signal
 so redaction can remove them from the text.
 
-This module reads files. It makes no network calls. Standard library only. Runs on Python 3.9 or later.
+Zendesk and Intercom pages are read with the Leader Report's own page reader, date parser and theme rule
+(vendor/convert.py, vendored unchanged at a pinned commit, see VENDORED.json), so a page the report's
+from_zendesk.py or from_intercom.py accepts is read the same way here, and the same window gives the same tickets.
+
+This module reads files. It makes no network calls. Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations
 
 import csv
-import datetime
 import html
 import io
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
+
+import convert  # noqa: E402  (vendored from the Leader Report, found through the path above)
 
 Json = dict[str, Any]
 KINDS = ("ticket", "conversation", "call", "nps", "survey")
@@ -52,19 +60,9 @@ def read_csv(path: Path) -> list[Json]:
 
 
 def day(value: Any) -> str:
-    """A date as YYYY-MM-DD from ISO text or epoch seconds or milliseconds. Empty when it cannot be read."""
-    if value is None or value == "":
-        return ""
-    if isinstance(value, str) and value.strip().isdigit():
-        value = int(value.strip())
-    if isinstance(value, (int, float)):
-        seconds = value / 1000 if abs(value) > 10**11 else value
-        return datetime.datetime.fromtimestamp(seconds, tz=datetime.timezone.utc).date().isoformat()
-    text = str(value).strip()
-    try:
-        return datetime.date.fromisoformat(text[:10]).isoformat()
-    except ValueError:
-        return ""
+    """A date as YYYY-MM-DD from ISO text or epoch seconds or milliseconds, read as the Leader Report reads it. Empty when it cannot be read."""
+    d = convert.day(value)
+    return d.isoformat() if d else ""
 
 
 _TAG = re.compile(r"<[^>]+>")
@@ -93,18 +91,11 @@ def _signal(source: str, kind: str, sid: Any, created: Any, account: Any, text: 
 
 
 def _items(data: Any, *keys: str) -> list[Json] | None:
-    if isinstance(data, list):
-        return [x for x in data if isinstance(x, dict)]
-    for key in keys:
-        if isinstance(data, dict) and isinstance(data.get(key), list):
-            return [x for x in data[key] if isinstance(x, dict)]
-    return None
+    return convert.items(data, *keys)
 
 
 def _theme(tags: list[str], prefix: str | None) -> str:
-    if not prefix:
-        return ""
-    return next((t[len(prefix) :].strip() for t in tags if t.lower().startswith(prefix.lower()) and t[len(prefix) :].strip()), "")
+    return convert.theme_of(tags, prefix, [])
 
 
 def from_zendesk(paths: list[str], theme_prefix: str | None = None) -> tuple[list[Json], set[str]]:

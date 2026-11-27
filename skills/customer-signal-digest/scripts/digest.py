@@ -24,7 +24,7 @@ person=contact+email) name the columns and default to id, text, created_at, acco
 
 These scripts read files and write files. They make no network calls.
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations
@@ -39,16 +39,23 @@ import secrets
 import sys
 from pathlib import Path
 
+if sys.version_info < (3, 11):  # noqa: UP036  (the guard exists for older interpreters)
+    raise SystemExit(f"customer-signal-digest: needs Python 3.11 or later; this is {sys.version.split()[0]}.")
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
 
 import cluster  # noqa: E402  (sibling scripts, found through the path above)
 import dedupe  # noqa: E402
+import landing_brief  # noqa: E402  (vendored unchanged from the Leader Report)
+import loop  # noqa: E402
 import rank  # noqa: E402
 import redact  # noqa: E402
+import render_html  # noqa: E402
 import signals  # noqa: E402
 import validate  # noqa: E402
 
-VERSION = "0.1.0"
+VERSION = "0.3.0"
 MAX_QUOTE = 240
 
 
@@ -140,11 +147,21 @@ def build(args: argparse.Namespace) -> int:
             left_out[f"{c['source']} rows with no text"] = no_text
     if not allsig:
         raise signals.Refused("no signals were read. Pass --zendesk, --intercom or --csv.")
+    for flag, value in (("--since", args.since), ("--until", args.until)):
+        if value:
+            try:
+                datetime.date.fromisoformat(value)
+            except ValueError:
+                raise signals.Refused(f"{flag} takes YYYY-MM-DD. Got {value!r}.") from None
     if args.since:
         before = len(allsig)
         allsig = [s for s in allsig if s["created"] and s["created"] >= args.since]
         left_out[f"signals before {args.since} or undated"] = before - len(allsig)
-    allsig = [s for s in allsig if s["created"] <= as_of.isoformat() or not s["created"]]
+    until = min(args.until or as_of.isoformat(), as_of.isoformat())
+    before = len(allsig)
+    allsig = [s for s in allsig if s["created"] <= until or not s["created"]]
+    if before - len(allsig):
+        left_out[f"signals after {until}"] = before - len(allsig)
     if args.redact_terms:
         try:
             extra = [line.strip() for line in Path(args.redact_terms).read_text(encoding="utf-8").splitlines()]
@@ -159,6 +176,8 @@ def build(args: argparse.Namespace) -> int:
     arr = signals.read_accounts(args.accounts) if args.accounts else {}
     base = args.customer_base or (signals.count_accounts(args.accounts) if args.accounts else None)
     result = rank.rank(opps, as_of, arr, rank.parse_weights(args.weights), customer_base=base)
+    named = sorted({a for o in result["opportunities"] for a in o["figures"]["account_ids"]})
+    dated = sorted(s["created"] for s in allsig if s["created"])
     withheld = 0
     for o in result["opportunities"]:
         o["quotes"], w = pick_quotes(o, known_list, args.max_quotes)
@@ -171,6 +190,7 @@ def build(args: argparse.Namespace) -> int:
         "tool": "customer-signal-digest",
         "version": VERSION,
         "as_of": as_of.isoformat(),
+        "window": {"from": args.since or (dated[0] if dated else None), "to": until},
         "illustrative": bool(args.illustrative),
         "inputs": inputs,
         "counts": {
@@ -184,6 +204,7 @@ def build(args: argparse.Namespace) -> int:
             "left_out": left_out,
         },
         **result,
+        "arr_by_account": {a: arr[a] for a in named if a in arr},
     }
     (run / "digest.json").write_text(json.dumps(digest, indent=2) + "\n")
     write_csv(run / "opportunities.csv", digest)
@@ -192,7 +213,37 @@ def build(args: argparse.Namespace) -> int:
     if not result["arr_used"] and arr:
         cov = result["arr_coverage"]
         print(f"digest: ARR is known for {cov['accounts_with_arr']} of {cov['accounts_named']} accounts, so it is shown but left out of the score.")
+    if args.loop:
+        learn(args, digest)
     return 0
+
+
+def learn(args: argparse.Namespace, digest: dict) -> None:
+    """Step 04 Learn: write the `signals` key of landing/<bet>.json and, with --html, the page for leaders and its Markdown twin."""
+    if not args.bet:
+        raise signals.Refused("--loop needs --bet, the bet's slug (its record is landing/<bet>.json).")
+    folder = Path(args.loop)
+    try:
+        record = loop.load(folder, args.bet)
+        brief_file = loop.brief_path(folder, record, args.brief)
+    except loop.RecordError as e:
+        raise signals.Refused(str(e)) from None
+    try:
+        brief = landing_brief.parse(brief_file.read_text(encoding="utf-8"))
+    except landing_brief.BriefError as e:
+        raise signals.Refused(f"the brief {brief_file} is not complete, so nothing was written. The parser says: {e}") from None
+    except OSError as e:
+        raise signals.Refused(f"cannot read the brief {brief_file} ({e}).") from None
+    key = loop.signals_key(digest, record, brief, brief_file, args.bet)
+    out = loop.write(folder, args.bet, brief_file, record, key)
+    print(f"digest: wrote the signals key of {out} ({key['check'] or 'not checked'}).")
+    if args.html:
+        html_path = Path(args.html)
+        html_path.parent.mkdir(parents=True, exist_ok=True)
+        html_path.write_text(render_html.page(key, args.bet), encoding="utf-8")
+        md_path = html_path.with_suffix(".md")
+        md_path.write_text(render_html.markdown(key, args.bet), encoding="utf-8")
+        print(f"digest: wrote {html_path} and {md_path}.")
 
 
 CSV_COLUMNS = (
@@ -414,6 +465,11 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--run", default="run")
     b.add_argument("--as-of", required=True, help="YYYY-MM-DD; recency counts back from this date")
     b.add_argument("--since", help="YYYY-MM-DD; leave out signals before this date")
+    b.add_argument("--until", help="YYYY-MM-DD; leave out signals after this date (default --as-of)")
+    b.add_argument("--loop", help="the working folder that holds landing/<bet>.json; writes only its signals key")
+    b.add_argument("--bet", help="the bet's slug, with --loop")
+    b.add_argument("--brief", help="the bet's landing brief, with --loop when the record does not exist yet")
+    b.add_argument("--html", help="with --loop: write the page for leaders here, and its Markdown twin beside it")
     b.add_argument("--zendesk", nargs="+", default=[])
     b.add_argument("--intercom", nargs="+", default=[])
     b.add_argument("--intercom-account-attribute", help="the conversation custom attribute that names the account")

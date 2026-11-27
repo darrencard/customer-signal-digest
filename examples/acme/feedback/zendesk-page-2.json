@@ -1,0 +1,87 @@
+{
+  "tickets": [
+    {
+      "id": 4101,
+      "created_at": "2026-11-20T09:00:00Z",
+      "organization_id": 9001,
+      "requester_id": 501,
+      "subject": "Quote draft left off the materials",
+      "description": "The assistant drafted a quote for a boiler swap and left off half the line items. Copper pipe and fittings were missing. Call me on 604-555-0142 or email priya.raman@harbourplumbing.example.\n\nThanks,\nPriya Raman",
+      "tags": [
+        "theme:quote-line-items"
+      ]
+    },
+    {
+      "id": 4105,
+      "created_at": "2026-10-22T09:00:00Z",
+      "organization_id": 9009,
+      "requester_id": 509,
+      "subject": "Job notes lost offline",
+      "description": "Mobile app lost my job notes when I went offline in a basement. They never synced.",
+      "tags": [
+        "theme:offline-sync"
+      ]
+    },
+    {
+      "id": 4109,
+      "created_at": "2026-10-01T09:00:00Z",
+      "organization_id": 9008,
+      "requester_id": 508,
+      "subject": "Call-out fee left off",
+      "description": "The quote draft left off the call-out fee line item, so we under-quoted a job.",
+      "tags": []
+    },
+    {
+      "id": 4106,
+      "created_at": "2026-09-15T09:00:00Z",
+      "organization_id": 9016,
+      "requester_id": 516,
+      "subject": "Dark mode",
+      "description": "Could the mobile app have a dark mode for early starts?",
+      "tags": []
+    }
+  ],
+  "users": [
+    {
+      "id": 501,
+      "name": "Priya Raman",
+      "email": "priya.raman@harbourplumbing.example"
+    },
+    {
+      "id": 502,
+      "name": "Tom Okafor",
+      "email": "tom@okaforelectrical.example"
+    },
+    {
+      "id": 503,
+      "name": "Grace Lindqvist",
+      "email": "grace@lindqvistroofing.example"
+    },
+    {
+      "id": 504,
+      "name": "Ahmed Siddiqui",
+      "email": "ahmed@siddiquibuild.example"
+    },
+    {
+      "id": 505,
+      "name": "Owen Hughes",
+      "email": "owen@hughesheating.example"
+    },
+    {
+      "id": 508,
+      "name": "Maya Fischer",
+      "email": "maya@fischertiling.example"
+    },
+    {
+      "id": 509,
+      "name": "Luis Moreno",
+      "email": "luis@morenoglazing.example"
+    },
+    {
+      "id": 516,
+      "name": "Hana Kim",
+      "email": "hana@kimlandscapes.example"
+    }
+  ],
+  "next_page": null
+}

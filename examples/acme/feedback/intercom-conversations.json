@@ -1,0 +1,86 @@
+{
+  "type": "conversation.list",
+  "conversations": [
+    {
+      "id": "215001",
+      "created_at": 1795165200,
+      "source": {
+        "subject": "",
+        "body": "<p>The quote draft left off the materials for the boiler swap.</p><p>Copper pipe and fittings were missing.</p>",
+        "author": {
+          "name": "Priya Raman",
+          "email": "priya.raman@harbourplumbing.example"
+        }
+      },
+      "tags": {
+        "tags": [
+          {
+            "name": "theme:quote-line-items"
+          }
+        ]
+      },
+      "custom_attributes": {
+        "account_id": "9001"
+      }
+    },
+    {
+      "id": "215002",
+      "created_at": 1793869200,
+      "source": {
+        "subject": "",
+        "body": "<p>Hi, this is Sam Whitfield from Whitfield Joinery. The drafted quote skipped the line items for hinges and handles. Ring me on +44 20 7946 0958.</p>",
+        "author": {
+          "name": "Sam Whitfield",
+          "email": "sam@whitfieldjoinery.example"
+        }
+      },
+      "tags": {
+        "tags": []
+      },
+      "custom_attributes": {
+        "account_id": "9007"
+      }
+    },
+    {
+      "id": "215004",
+      "created_at": 1794301200,
+      "source": {
+        "subject": "",
+        "body": "<p>Chasing emails keep going to clients who already paid. Please stop the reminder once the payment matches.</p>",
+        "author": {
+          "name": "Dev Patel",
+          "email": "dev.patel@pateldrainage.example"
+        }
+      },
+      "tags": {
+        "tags": []
+      },
+      "custom_attributes": {
+        "account_id": "9006"
+      }
+    },
+    {
+      "id": "215006",
+      "created_at": 1794819600,
+      "source": {
+        "subject": "",
+        "body": "<p>Love that quotes go out the same day now. Customers notice.</p>",
+        "author": {
+          "name": "Erin Walsh",
+          "email": "erin@walshdecor.example"
+        }
+      },
+      "tags": {
+        "tags": []
+      },
+      "custom_attributes": {
+        "account_id": "9014"
+      }
+    }
+  ],
+  "pages": {
+    "type": "pages",
+    "page": 1,
+    "total_pages": 1
+  }
+}

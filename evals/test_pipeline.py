@@ -154,9 +154,7 @@ class Refusals(unittest.TestCase):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
     def test_missing_csv_column(self) -> None:
-        code, _, err = run_cli(
-            ["build", "--run", self.tmp, "--as-of", helpers.AS_OF, "--csv", f"source=nps,kind=nps,file={helpers.FIXTURE / 'nps.csv'},text=nope"]
-        )
+        code, _, err = run_cli(["build", "--run", self.tmp, "--as-of", helpers.AS_OF, "--csv", f"source=nps,kind=nps,file={helpers.FIXTURE / 'nps.csv'},text=nope"])
         self.assertEqual(code, 2)
         self.assertIn("no column named", err)
 

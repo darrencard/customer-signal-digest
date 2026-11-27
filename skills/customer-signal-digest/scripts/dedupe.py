@@ -11,7 +11,7 @@ Two signals are duplicates when:
 The earliest signal (then the lowest ID) is kept. Its `duplicates` list holds the IDs merged into it,
 so reach and frequency count the problem once while the evidence trail keeps every source.
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations

@@ -13,7 +13,7 @@ Errors (any one blocks the render):
   too-long              a title over 80 characters or a summary over 400
   title-is-a-solution   a title that starts with a build verb (Add, Build, Integrate ...): name the customer's problem
 
-Standard library only. Runs on Python 3.9 or later.
+Standard library only. Python 3.11 or later.
 """
 
 from __future__ import annotations
