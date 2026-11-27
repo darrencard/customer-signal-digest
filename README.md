@@ -1,12 +1,12 @@
 # Customer Signal Digest: did customers feel it?
 
 ```text
-Install the customer-signal-digest skill from https://github.com/darrencard/customer-signal-digest: clone it, find a Python 3.11 or later on this machine (macOS python3 is often 3.9), run the tests with it (python -m unittest discover -s evals), and copy skills/customer-signal-digest into ~/.claude/skills/customer-signal-digest. Then digest what customers said about one shipped bet: read its landing/<bet>.json record and brief, fetch the feedback from the tools connected to this session (Intercom or the Zendesk API first, saved as returned; CSV for call notes, NPS and anything else), ask me only for what you cannot find, and show me the page it writes.
+Install the customer-signal-digest skill from https://github.com/darrencard/customer-signal-digest: clone it, find a Python 3.11 or later on this machine (macOS python3 is often 3.9), run the tests with it (python -m unittest discover -s evals), and copy skills/customer-signal-digest into ~/.claude/skills/customer-signal-digest. Then digest what customers said about one shipped project: read its project file (landing/<bet>.json) and landing brief, fetch the feedback from the tools connected to this session (Intercom or the Zendesk API first, saved as returned; CSV for call notes, NPS and anything else), ask me only for what you cannot find, and show me the page it writes.
 ```
 
-A free Claude skill that reads what customers said about a shipped bet, against the problem its landing brief set out to fix.
+A free Claude skill that reads what customers said about a shipped project, against the problem its landing brief (a one-page plan: what good looks like, by when, at what cost) set out to fix.
 
-**Why it matters:** a metric can pass its bar while customers still describe the old problem. This puts their words beside the bet's status, counted in code, with every quote redacted and sourced.
+**Why it matters:** a metric can pass its target while customers still describe the old problem. This puts their words beside the project's status, counted in code, with every quote redacted and sourced.
 
 **Where it sits:** step 04 (Learn) of the Landing Loop. It reads the brief and did-it-land's `landed` key, writes only its own `signals` key, and renders one page in the Leader Report style.
 
@@ -18,9 +18,9 @@ Acme is invented: invoicing software for trades businesses. Its quote drafting a
 python3 examples/acme/sample.py
 ```
 
-It needs Python 3.11 or later (on macOS, where `python3` is often 3.9, use `python3.12`). It runs in under a second and writes [examples/acme/customer-signal-digest.html](examples/acme/customer-signal-digest.html), its Markdown twin, and the `signals` key of [examples/acme/landing/quote-drafting.json](examples/acme/landing/quote-drafting.json). Feedback window 2026-09-07 to 2026-11-24, as of 2026-11-26. It starts from the landing-loop record filtered to what this skill reads ([examples/acme/upstream](examples/acme/upstream)). A test checks the command reproduces the committed files byte for byte.
+It needs Python 3.11 or later (on macOS, where `python3` is often 3.9, use `python3.12`). It runs in under a second and writes [examples/acme/customer-signal-digest.html](examples/acme/customer-signal-digest.html), its Markdown twin, and the `signals` key of [examples/acme/landing/quote-drafting.json](examples/acme/landing/quote-drafting.json). Feedback window 2026-09-07 to 2026-11-24, as of 2026-11-26. It starts from the landing-loop project file filtered to what this skill reads ([examples/acme/upstream](examples/acme/upstream)). A test checks the command reproduces the committed files byte for byte.
 
-What it finds: the metric landed (43% against a 40% bar, as did-it-land wrote it), and the problem is still raised. 7 signals from 7 accounts say quote drafts miss line items, 5 of them in the last 30 days. 5 accounts say quotes now go out the same day.
+What it finds: the metric landed (43% against a 40% target, as did-it-land wrote it), and the problem is still raised. 7 signals from 7 accounts say quote drafts miss line items, 5 of them in the last 30 days. 5 accounts say quotes now go out the same day.
 
 ## Install
 
@@ -37,15 +37,15 @@ Standalone: copy `skills/customer-signal-digest` into `~/.claude/skills/`. Pytho
 
 | | What |
 |---|---|
-| Reads | The landing brief, through the Leader Report's own parser (vendored unchanged); `landed` from `landing/<bet>.json`; customer feedback |
+| Reads | The landing brief, through the Leader Report's own parser (vendored unchanged); `landed` from the project file, `landing/<bet>.json`; customer feedback |
 | Feedback, live first | Zendesk ticket pages and Intercom conversation pages as the APIs return them, read with the Leader Report's own page reader (vendored at a pinned commit) |
 | Feedback, CSV fallback | Call notes, NPS and survey answers. You name the columns; nothing is guessed |
-| Writes | The `signals` key of `landing/<bet>.json`, nothing else; one HTML page and its Markdown twin |
-| Never | Computes a bet's status. It prints `landed.status` as did-it-land wrote it |
+| Writes | The `signals` key of the project file, nothing else; one HTML page and its Markdown twin |
+| Never | Computes a project's status. It prints `landed.status` as did-it-land wrote it |
 
-Its own check has two words: **problem still raised** when a theme tied to the bet's problem has a signal in the last 30 days, **problem not raised** when none has. You confirm which themes are about the bet (`"bet"` and `"side"` in `themes.json`); code never guesses.
+Its own check has two words: **problem still raised** when a theme tied to the project's problem has a signal in the last 30 days, **problem not raised** when none has. You confirm which themes are about the project (`"bet"` and `"side"` in `themes.json`); code never guesses.
 
-## The record key
+## The project file's key
 
 Every figure carries value, unit, source, window and as_of. Shortened:
 
@@ -76,7 +76,7 @@ Every figure carries value, unit, source, window and as_of. Shortened:
 ## Go deeper
 
 - [SKILL.md](skills/customer-signal-digest/SKILL.md): the workflow, the inputs, every rule and the notes check.
-- Without a bet: `digest.py build` and `digest.py render` still rank every theme customers raised, with no record.
+- Without a project: `digest.py build` and `digest.py render` still rank every theme customers raised, with no project file.
 - [CHANGELOG.md](CHANGELOG.md)
 
 MIT licence. Made by [Dacard](https://www.dacard.ai).

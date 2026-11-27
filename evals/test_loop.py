@@ -324,22 +324,65 @@ class Visual(unittest.TestCase):
 
     def test_svgkit_matches_its_landing_loop_pin(self) -> None:
         pin = json.loads((SKILL / "VENDORED.json").read_text())["landing-loop"]
-        self.assertEqual(pin["commit"], "5d01756d08ab3eb92b457c3286729791df6bcf5f")
+        self.assertEqual(pin["commit"], "78784efd2ecd5282f6ec264e545ce2075e459be2")
         self.assertEqual(set(pin["files"]), {"scripts/vendor/svgkit.py"})
         for rel, info in pin["files"].items():
             digest_ = hashlib.sha256((SKILL / rel).read_bytes()).hexdigest()
             self.assertEqual(digest_, info["sha256"], f"{rel} changed. Copy it again from landing-loop at the pinned commit and update VENDORED.json.")
 
     def test_the_visual_draws_only_figures_the_page_prints(self) -> None:
-        self.assertEqual(len(svgkit.visuals_in(self.page)), 2, "the wide picture and the tall one")
         self.assertEqual(svgkit.unprinted(self.page), [])
-        drawn = {t for svg in svgkit.visuals_in(self.page) for t in svgkit.numbers_in(svg)}
-        self.assertEqual(drawn, {"7", "5", "2", "30"})
+        frame = svgkit.frames_in(self.page)[0]
+        self.assertIn('<span class="sc-l"><b>7 accounts</b> · 5 of 7 signals in 30 days</span>', frame)
+        self.assertIn('<span class="sc-l"><b>5 accounts</b> · 2 of 5 signals in 30 days</span>', frame)
         f = self.key["figures"]
-        for svg in svgkit.visuals_in(self.page):
-            # One block per signal on each side, and the last 30 days filled in ink.
-            self.assertEqual(svg.count('rx="4"'), f["problem_signals"]["value"] + f["praise_signals"]["value"])
-            self.assertEqual(svg.count('fill="var(--t1)"'), f["problem_last_30_days"]["value"] + 2)
+        # Each share bar draws the last 30 days of one side as a share of that side's signals.
+        widths = re.findall(r'<rect class="a" x="0" y="0" width="([^"]+)"', frame)
+        p = f["problem_last_30_days"]["value"] / f["problem_signals"]["value"] * 100
+        self.assertEqual(widths, [svgkit.num(p) + "%", svgkit.num(2 / f["praise_signals"]["value"] * 100) + "%"])
+
+    # The scorecard grammar (landing-loop tools/SCORECARD-ROLLOUT.md, svgkit 1.2.0)
+
+    def css(self) -> str:
+        return self.page.split("<style>", 1)[1].split("</style>", 1)[0]
+
+    def test_one_frame_two_rows_and_the_check_word_on_the_problem_row(self) -> None:
+        frames = svgkit.frames_in(self.page)
+        self.assertEqual(len(frames), 1)
+        self.assertEqual(re.findall(r'<span class="sc-n">([^<]+)</span>', frames[0]), ["Still feel the problem", "Problem gone"])
+        rows = re.findall(r'<div class="sc-r">.*?</span></div>', frames[0])
+        self.assertIn('<span class="sc-w ink">PROBLEM STILL RAISED</span>', rows[0])
+        self.assertEqual(frames[0].count('class="sc-w'), 1)
+
+    def test_no_text_inside_a_picture_and_no_scaled_picture(self) -> None:
+        self.assertEqual(svgkit.svgs_with_text(self.page), [])
+        self.assertEqual(svgkit.scaled_svgs_in(self.page), [])
+
+    def test_labels_render_12px_and_names_14px(self) -> None:
+        css = self.css()
+        self.assertEqual(set(svgkit.font_sizes(css)), {"var(--sc-m)", "var(--sc-n)"})
+        self.assertIn("--sc-m:calc(12px / var(--sc-z))", css)
+        self.assertIn("--sc-n:calc(14px / var(--sc-z))", css)
+        self.assertIn(".scg{--sc-z:1;", css, "a sample page has no zoom")
+
+    def test_no_box_inside_the_frame_and_no_overlap(self) -> None:
+        self.assertEqual(svgkit.boxes_in_frames(self.page, self.css()), [])
+        self.assertNotIn("position:absolute", svgkit.SCORECARD_CSS)
+        self.assertNotIn('class="chip"', self.page.split("For your engineers", 1)[0])
+        self.assertNotIn('class="panel"', self.page, "no card around the frame")
+
+    def test_no_legacy_svgkit_primitive_draws_on_the_page(self) -> None:
+        import warnings
+
+        self.assertEqual(svgkit.legacy_in(self.page), [])
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            render_html.page(self.key, "quote-drafting")
+
+    def test_no_status_colour_in_the_frame(self) -> None:
+        frame = svgkit.frames_in(self.page)[0]
+        self.assertNotIn('class="ac ', frame)
+        self.assertNotIn('class="st ', frame)
 
     def test_green_and_red_only_beside_their_words(self) -> None:
         body = self.page.split("</style>", 1)[1]
@@ -350,8 +393,8 @@ class Visual(unittest.TestCase):
         self.assertEqual(body.count('<span class="st landed">landed</span>'), 1)
 
     def test_each_visual_states_its_answer(self) -> None:
-        labels = re.findall(r'<svg class="sk-(?:wide|tall)"[^>]* aria-label="([^"]+)"', self.page)
-        self.assertEqual(len(labels), 2)
+        labels = re.findall(r'role="img" aria-label="([^"]+)"', self.page)
+        self.assertEqual(len(labels), 1)
         for label in labels:
             self.assertEqual(
                 label,
@@ -388,23 +431,21 @@ class Visual(unittest.TestCase):
         self.assertNotRegex(css, r"font-size\s*:\s*[\d.]+r?em")
         before, after = ".a{font:400 10px/16px var(--mono)}.b{font-size:10.5px}.c{font-size:13px}", ".a{font:400 11px/16px var(--mono)}.b{font-size:11px}.c{font-size:13px}"
         self.assertEqual(render_html.floor_fonts(before), after)
-        # The phone picture is 340 wide; on a 390px screen the panel gives it 356px, so its 11px labels never shrink.
-        self.assertIn("@media (max-width:440px){.panel{margin:0 -8px;padding:16px 8px 14px}}", self.page)
 
     def test_the_header_prints_the_plain_name_and_the_code_name_is_for_engineers(self) -> None:
         self.assertEqual(re.search(r'<span class="sk-meta"><span>(.*?)</span>', self.page).group(1), "Customer signals")
-        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.1."))
-        self.assertIn("Built by customer-signal-digest 0.3.1.", self.page.split("For your engineers", 1)[1])
-        self.assertIn("Built by customer-signal-digest 0.3.1.", self.md.split("## For your engineers", 1)[1])
+        self.assertTrue(self.md.split("\n")[2].startswith("Customer signals v0.3.2."))
+        self.assertIn("Built by customer-signal-digest 0.3.2.", self.page.split("For your engineers", 1)[1])
+        self.assertIn("Built by customer-signal-digest 0.3.2.", self.md.split("## For your engineers", 1)[1])
 
     def test_the_page_follows_the_sample_anatomy(self) -> None:
         body = self.page.split('<main class="solo">', 1)[1]
-        order = ['class="sk-hdr"', "<h1>", 'class="marks"', 'class="panel"', "What to do next", 'class="cols"', "For your engineers"]
+        order = ['class="sk-hdr"', "<h1>", 'class="marks"', '<div class="sc scg"', "What to do next", 'class="cols"', "For your engineers"]
         at = [body.index(x) for x in order]
         self.assertEqual(at, sorted(at))
         self.assertEqual(body.count("<h1>"), 1)
         self.assertIn("<details><summary>For your engineers</summary>", body)
-        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.1</span>", body)
+        self.assertIn("<span>Customer signals</span><span>As of 2026-11-26</span><span>v0.3.2</span>", body)
         self.assertNotIn("Book a call", body, "a sample is the skill's own output: no call to action")
 
 

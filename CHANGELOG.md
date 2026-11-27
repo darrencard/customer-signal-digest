@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2, 2026-11-27
+
+- The picture is scorecard rows in the grammar of the /update outcome scorecard, drawn with svgkit 1.2.0 (vendored byte-identical, pinned at landing-loop 78784ef). One frame, two rows: customers who still feel the problem, then customers who say it is gone. Each row is a share bar of that side's signals with the last 30 days in ink, the figure `7 accounts · 5 of 7 signals in 30 days`, and the contract's check word as text on the problem row (PROBLEM STILL RAISED in ink, PROBLEM NOT RAISED muted). Geist Mono 12px for labels, figures and words, Geist 14px for names; no text inside any picture. The stacks of blocks, their wide and phone variants and the card around them are gone, and the check word under the heading is plain mono text, not a boxed chip.
+- README and SKILL.md use plain words: project, target, the project file, and the landing brief defined once as a one-page plan. SKILL.md tells Claude to use the user's own word if they say bet. Keys, file names and flags are unchanged.
+- Tests: no text inside an SVG, no picture with a viewBox, every frame font size 12 or 14px, no box inside the frame, no legacy svgkit primitive (rendered with DeprecationWarning as an error), one frame with two rows and the check word on the problem row, each figure line printed exactly, each share bar's width from the printed counts, the aria-label equal to the verdict.
+
 ## 0.3.1, 2026-11-27
 
 - The HTML page follows the Landing Loop sample anatomy: the shared header (mark, DACARD, skill, date, version, blue Illustrative tag), the verdict as the heading ("Quote drafting landed, but 7 customer accounts still raise the problem."), the project's status from did-it-land beside the customer check, the signature picture, one next step with the brief's decider in brass and a due date, then the quotes and the figures in two columns. Other themes fold away; the evidence ledger, sources, ranks, file names and the record key fold under "For your engineers".

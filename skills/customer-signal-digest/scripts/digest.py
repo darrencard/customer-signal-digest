@@ -55,7 +55,7 @@ import render_html  # noqa: E402
 import signals  # noqa: E402
 import validate  # noqa: E402
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 MAX_QUOTE = 240
 
 

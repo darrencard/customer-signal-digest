@@ -6,8 +6,11 @@ pinned commit) and draws its picture with svgkit (scripts/vendor/svgkit.py, vend
 landing-loop). Only a few rules for this page's layout are added.
 
 It reads top down for someone who has never seen the loop: the shared header, the verdict as the heading, the
-project's status beside this skill's own check, then the picture: two stacks of signals, "still feel the problem"
-against "problem gone", with the last 30 days in ink. One next step follows, owned by the person the landing brief
+project's status beside this skill's own check, then one scorecard frame in the grammar of the /update outcome
+scorecard (svgkit 1.2.0): two rows, customers who still feel the problem and customers who say it is gone, each a
+share bar of that side's signals with the last 30 days in ink, `7 accounts · 5 of 7 signals in 30 days`, and the
+check word on the problem row. Geist Mono 12px for labels, figures and words, Geist 14px for names, no text inside
+any picture. One next step follows, owned by the person the landing brief
 names. The quotes and the figures sit in two columns; other themes and everything technical (the ledger, file names,
 the record key) fold away. Public copy uses plain words: project, target, the project file.
 
@@ -49,9 +52,7 @@ main.solo{margin-left:0}
 .solo h2{margin-bottom:16px}
 .marks{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;margin:0 0 20px;font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
 .marks>span{display:inline-flex;align-items:center;gap:10px}
-.chk{font:400 11px/16px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t1);border:1px solid var(--line3);border-radius:3px;padding:1px 6px;white-space:nowrap}
-.panel{border:1px solid var(--line);border-radius:12px;background:var(--s1);padding:24px 28px 20px}
-@media (min-width:1100px){.panel .sk{display:grid;grid-template-columns:640px minmax(0,1fr);gap:16px 40px;align-items:center}.panel .sk figcaption{margin-top:0;flex-direction:column;align-items:flex-start}}
+.chk{font:400 12px/16px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--t1);white-space:nowrap}
 .next{margin-top:28px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 32px;align-items:baseline;border:1px solid var(--brass);border-radius:12px;padding:20px 24px;background:var(--brass-bg)}
 .next>b{font:400 11px/22px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--brass)}
 .next p{margin:0;font-size:16px;line-height:1.5;color:var(--t1)}
@@ -82,12 +83,11 @@ main.solo{margin-left:0}
 ::selection{background:var(--t1);color:var(--bg)}
 :focus-visible{outline-color:var(--t1)}
 .foot{max-width:1120px;margin:0 auto;padding:28px 40px 64px;color:var(--t3);font-size:12px}
-@media (max-width:980px){.foot{padding:24px 16px 48px}.solo .slide.cover{padding-top:24px}.cols,.next{grid-template-columns:1fr}.panel{padding:18px 16px 16px}
+@media (max-width:980px){.foot{padding:24px 16px 48px}.solo .slide.cover{padding-top:24px}.cols,.next{grid-template-columns:1fr}
 .stack table,.stack tbody,.stack tr,.stack td{display:block}.stack tr:first-child{display:none}.stack tr{padding:10px 16px;border-bottom:1px solid var(--line)}
 .stack td{border:0;padding:3px 0;display:grid;grid-template-columns:118px 1fr;gap:12px}.stack td.num{text-align:left;white-space:normal}
 .stack td::before{content:attr(data-l);font:400 11px/20px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}}
 @media (max-width:560px){.figs>div{grid-template-columns:1fr;gap:0}}
-@media (max-width:440px){.panel{margin:0 -8px;padding:16px 8px 14px}}
 """
 
 SIDE_LABEL = {"problem": "Still feel the problem", "praise": "Problem gone"}
@@ -168,7 +168,7 @@ def status_mark(bs: dict[str, Any]) -> str:
 
 
 def check_mark(key: dict[str, Any]) -> str:
-    """This skill's own check word. Ink on a hairline: never a status colour."""
+    """This skill's own check word, as plain mono text in ink: never a boxed chip, never a status colour."""
     return f'<span class="chk">{e(CHECK_PLAIN.get(key["check"], key["check"]))}</span>'
 
 
@@ -183,53 +183,44 @@ def side(key: dict[str, Any], name: str) -> dict[str, int]:
     }
 
 
-# The signature picture
+# The scorecard
 
 
-def stacks(key: dict[str, Any], variant: str) -> str:
-    """Two stacks of signals: still feel the problem, and problem gone. One block per signal, oldest at the foot;
-    the last 30 days sit on top in ink, earlier signals in outline. Past 24 signals a stack draws as two bars."""
-    wide = variant == "wide"
-    width = 640.0 if wide else float(sk.TALL)
-    sides = [("problem", side(key, "problem")), ("praise", side(key, "praise"))]
-    most = max([s["signals"] for _, s in sides] + [1])
-    base = 190.0
-    unit = 150.0 / max(most, 6)
-    blocks = most <= 24
-    col = 140.0 if wide else 64.0
-    at = (0.0, 330.0) if wide else (0.0, 176.0)
-    parts = [sk.rule(0, base + 0.75, width, base + 0.75, tone=sk.LINE2)]
-    for (name, s), x in zip(sides, at, strict=True):
-        old = s["signals"] - s["recent"]
-        if blocks:
-            for i in range(s["signals"]):
-                recent = i >= old
-                parts.append(sk.tile(x, base - (i + 1) * unit + 1.5, col, unit - 3, filled=recent, tone=sk.INK if recent else sk.MUTED))
-        else:
-            if old:
-                parts.append(sk.tile(x, base - old * unit, col, old * unit - 1.5, tone=sk.MUTED))
-            if s["recent"]:
-                parts.append(sk.tile(x, base - s["signals"] * unit, col, s["recent"] * unit - 1.5, filled=True, tone=sk.INK))
-        top = base - s["signals"] * unit
-        tx = x + col + 12
-        if s["recent"]:
-            mid = top + s["recent"] * unit / 2
-            parts.append(sk.rule(x + col + 4, top + 1.5, x + col + 4, top + s["recent"] * unit - 1.5, tone=sk.INK, width=sk.STROKE))
-            parts.append(sk.value(tx, mid + 1, str(s["recent"]), size=16))
-            parts.append(sk.label(tx, mid + 17, "last 30 days"))
-        big = str(s["signals"])
-        size = 26 if wide else 22
-        parts.append(sk.value(x, top - 12, big, size=size))
-        parts.append(sk.label(x + len(big) * size * 0.6 + 8, top - 13, "signal" if s["signals"] == 1 else "signals"))
-        parts.append(sk.label(x, base + 24, SIDE_LABEL[name], tone=sk.INK2))
-        parts.append(sk.label(x, base + 42, plural(s["accounts"], "account")))
-    p, g = sides[0][1], sides[1][1]
-    aria = (
+def answer(key: dict[str, Any]) -> str:
+    """The aria-label: what customers say, and the check, in one sentence each."""
+    p, g = side(key, "problem"), side(key, "praise")
+    return (
         f"{plural(p['signals'], 'signal')} from {plural(p['accounts'], 'account')} say customers still feel the problem, "
         f"{p['recent']} in the last 30 days; {plural(g['signals'], 'signal')} from {plural(g['accounts'], 'account')} say it is gone, "
         f"{g['recent']} in the last 30 days. {CHECK_PLAIN.get(key['check'], key['check']).capitalize()}."
     )
-    return sk.frame("".join(parts), label=aria, height=base + 52, width=width, variant=variant)
+
+
+def check_word(key: dict[str, Any]) -> str:
+    """The contract's check word, as text: problem still raised in ink, problem not raised muted."""
+    word = CHECK_PLAIN.get(key["check"], key["check"])
+    return sk.check_word(word.upper(), ink=key["check"] == "problem still raised")
+
+
+def scorecard(key: dict[str, Any]) -> str:
+    """Two rows: customers who still feel the problem, then customers who say it is gone. Each is a share bar of that
+    side's signals, the last 30 days in ink; the figure prints `7 accounts · 5 of 7 signals in 30 days`. The check word
+    sits on the problem row, the side it is read from."""
+    rows = []
+    for name in ("problem", "praise"):
+        s = side(key, name)
+        figure = sk.figure_line(plural(s["accounts"], "account"), tail=f"{s['recent']} of {plural(s['signals'], 'signal')} in 30 days")
+        word = check_word(key) if name == "problem" else ""
+        rows.append(sk.sc_row(SIDE_LABEL[name], picture=sk.share_bar(s["recent"], s["signals"]), figure=figure, word=word))
+    return sk.sc_frame(
+        rows,
+        label=answer(key),
+        title="Signals about this project",
+        head=["Customers", "", "Accounts · last 30 days", "Check"],
+        legend=sk.legend("actual", "last 30 days"),
+        caption=caption(key),
+        illustrative=key["illustrative"],
+    )
 
 
 # The words
@@ -262,10 +253,7 @@ def lede(key: dict[str, Any], bet: str) -> str:
 
 
 def caption(key: dict[str, Any]) -> str:
-    return (
-        "Each block is one signal about this project, oldest at the foot. Ink blocks came in the last 30 days, "
-        f"to {key['window']['to']}; outlined blocks came earlier. Left: customers who still feel the problem. Right: customers who say it is gone."
-    )
+    return f"Each row is one side's signals about this project; the ink share came in the last 30 days, to {key['window']['to']}."
 
 
 def due_date(as_of: str, by: str | None) -> str:
@@ -394,12 +382,12 @@ def page(key: dict[str, Any], bet: str) -> str:
     version = "v" + key["tool"].rsplit(" ", 1)[-1]
     header = sk.page_header("Customer signals", date=f"As of {key['as_of']}", version=version, illustrative=ill)
     marks = f'<p class="marks"><span>Project status, from Did it land? {status_mark(bs)}</span><span>Customer check {check_mark(key)}</span></p>'
-    pic = sk.figure(stacks(key, "wide"), stacks(key, "tall"), caption=caption(key), illustrative=ill)
+    pic = scorecard(key)
     step = (
         f'<div class="next"><b>What to do next</b><div><p>{e(plain(key["next_step"]))}</p>'
         f'<span class="who"><span class="o">{e(key["decides"])}</span><span class="d">{e(due_date(key["as_of"], key["brief"]["by"]))}</span></span></div></div>'
     )
-    cover = f'<section class="slide cover">{header}<h1>{e(heading(key, bet))}</h1><p class="lede">{lede(key, bet)}</p>{marks}<div class="panel">{pic}</div>{step}</section>'
+    cover = f'<section class="slide cover">{header}<h1>{e(heading(key, bet))}</h1><p class="lede">{lede(key, bet)}</p>{marks}{pic}{step}</section>'
     on_bet = [t for t in key["themes"] if t["side"] in ("problem", "praise")]
     figs = '<dl class="figs">' + "".join(f"<div><dt>{k}</dt><dd>{v}</dd></div>" for k, v in figures(key)) + "</dl>"
     detail = (
@@ -416,7 +404,7 @@ def page(key: dict[str, Any], bet: str) -> str:
     )
     return (
         '<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        f'<title>{e(title)}</title><style>{floor_fonts(stylesheet() + sk.CSS + PAGE_CSS)}</style></head><body><main class="solo">'
+        f'<title>{e(title)}</title><style>{floor_fonts(stylesheet() + sk.CSS + sk.SCORECARD_CSS + PAGE_CSS)}</style></head><body><main class="solo">'
         f"{cover}{detail}{more}{foot}</main></body></html>\n"
     )
 
