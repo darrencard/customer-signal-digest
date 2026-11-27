@@ -96,6 +96,6 @@ Problem gone. 5 signals from 5 accounts; 2 in the last 30 days, 2 in the 30 days
 | Accounting export puts the wrong tax code on labour | other | 5 | calls:C-302, zendesk:4104 |
 | Unnamed: app, dark, early | other | 6 | zendesk:4106 |
 
-Status: `landed`, copied from `landed.status` as did-it-land 0.3.2 wrote it. Check as the record stores it: `problem still raised`. 7 signals from 7 accounts say the problem is still there, 5 of them in the last 30 days.
+Status: `landed`, copied from `landed.status` as did-it-land 0.3.4 wrote it. Check as the record stores it: `problem still raised`. 7 signals from 7 accounts say the problem is still there, 5 of them in the last 30 days.
 
 Landing brief: `quote-drafting.md`. Built by customer-signal-digest 0.3.2. With --loop and --bet, the build adds its page to the project file: the `signals` key of `landing/<bet>.json`, and no other key.
