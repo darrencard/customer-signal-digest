@@ -8,7 +8,7 @@ As of 2026-11-26. customer-signal-digest 0.3.0. Illustrative.
 
 - **Problem:** Tradespeople spend evenings writing quotes by hand, so quotes go out late and lose the job.
 - **Bar:** Quote draft acceptance rate: 40%, higher is better, by 2026-11-15.
-- **Bet status:** landed. Printed from landed.status, as did-it-land 0.3.0 wrote it. Quote draft acceptance rate is 43% (2026-11-23).
+- **Bet status:** landed. Printed from landed.status, as did-it-land 0.3.1 wrote it. Quote draft acceptance rate is 43% (2026-11-23).
 - **Signal check:** problem still raised. 7 signals from 7 accounts say the problem is still there, 5 of them in the last 30 days.
 
 ## In their words

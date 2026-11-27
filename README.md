@@ -79,4 +79,6 @@ Every figure carries value, unit, source, window and as_of. Shortened:
 - Without a bet: `digest.py build` and `digest.py render` still rank every theme customers raised, with no record.
 - [CHANGELOG.md](CHANGELOG.md)
 
-MIT licence. Made by [Dacard](https://www.dacard.ai). Claude is a trademark of Anthropic, PBC; this project is independent of Anthropic.
+MIT licence. Made by [Dacard](https://www.dacard.ai).
+
+Claude and Claude Code are trademarks of Anthropic, PBC. These skills are independent and not affiliated with or endorsed by Anthropic.
